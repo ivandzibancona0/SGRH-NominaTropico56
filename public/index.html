@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SGRH - Trópico 56 | Sistema de Gestión de Recursos Humanos</title>
+    <meta name="description" content="Sistema Integral de Recursos Humanos para el restaurante Trópico 56. Control de empleados, asistencias, incidencias, vacaciones y nómina.">
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <link rel="stylesheet" href="/css/modules.css">
+</head>
+<body>
+
+    <!-- ========================================================= -->
+    <!-- 1. VISTA DE AUTENTICACIÓN / LOGIN                         -->
+    <!-- ========================================================= -->
+    <div id="auth-view">
+        <div class="login-card">
+            <div class="login-header">
+                <img src="/assets/logo-tropico.svg" alt="Logotipo Oficial Trópico 56" class="login-logo-img">
+                <h1>Trópico 56</h1>
+                <p>Sistema de Gestión de Recursos Humanos</p>
+            </div>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Usuario o Correo Electrónico</label>
+                    <input type="text" id="login-username" class="form-control" placeholder="ej. admin o estandar" required autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="login-password">Contraseña</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="btn-login-submit" style="width: 100%; margin-top: 0.5rem;">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- 2. VISTA PRINCIPAL DE LA APLICACIÓN (SPA APP SHELL)       -->
+    <!-- ========================================================= -->
+    <div id="app-view" style="display: none;">
+        <!-- Topbar -->
+        <header class="app-topbar">
+            <div class="topbar-left">
+                <button class="btn-hamburger" id="btn-hamburger" aria-label="Abrir Menú Lateral">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+
+                <div class="topbar-brand" data-route="dashboard">
+                    <img src="/assets/logo-tropico.svg" alt="Trópico 56" class="topbar-logo">
+                    <div class="brand-text">
+                        <h2>TRÓPICO 56</h2>
+                        <span>Recursos Humanos</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <button class="btn btn-secondary btn-sm" id="topbar-btn-punch" style="gap: 0.35rem; padding: 0.35rem 0.65rem;" title="Abrir Reloj Checador">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--color-primary)" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span style="font-weight: 700; font-size: 0.8rem;">Reloj Checador</span>
+                </button>
+
+                <div class="user-badge" id="topbar-user-badge">
+                    <div class="user-avatar-initial" id="topbar-user-initial">A</div>
+                    <span class="user-name-text" id="topbar-user-name">Usuario</span>
+                    <span class="user-role-tag" id="topbar-user-role">Admin</span>
+                </div>
+
+                <button class="btn-icon-topbar" id="btn-logout" title="Cerrar Sesión" aria-label="Cerrar Sesión">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Body Shell (Sidebar + Main) -->
+        <div class="app-body">
+            <!-- Sidebar Desktop -->
+            <aside class="app-sidebar">
+                <ul class="sidebar-menu" id="sidebar-nav-menu">
+                    <!-- Dynamic Menu Items Generated via App.js -->
+                </ul>
+            </aside>
+
+            <!-- Main Content View Area -->
+            <main class="app-main" id="app-main-content">
+                <!-- Dynamically Rendered by Modules -->
+            </main>
+        </div>
+
+        <!-- Mobile Bottom Navigation (Mobile First) -->
+        <nav class="mobile-bottom-nav">
+            <button class="mobile-nav-btn active" data-route="dashboard">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                <span>Inicio</span>
+            </button>
+            <button class="mobile-nav-btn" data-route="employees">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg>
+                <span>Personal</span>
+            </button>
+            <button class="mobile-nav-btn" data-route="attendance">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><polyline points="9 16 11 18 15 14"/></svg>
+                <span>Asistencias</span>
+            </button>
+            <button class="mobile-nav-btn" data-route="payroll">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 14h2M12 14h6M6 17h4"/></svg>
+                <span>Nómina</span>
+            </button>
+            <button class="mobile-nav-btn" id="btn-mobile-more">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                <span>Menú</span>
+            </button>
+        </nav>
+
+        <!-- Mobile Lateral Drawer / Sandwich Menu -->
+        <div class="mobile-drawer-overlay" id="mobile-drawer-overlay">
+            <div class="mobile-drawer" id="mobile-drawer">
+                <div class="drawer-header">
+                    <div class="drawer-brand">
+                        <img src="/assets/logo-tropico.svg" alt="Trópico 56" class="drawer-logo">
+                        <div>
+                            <h3>TRÓPICO 56</h3>
+                            <span>Recursos Humanos</span>
+                        </div>
+                    </div>
+                    <button class="btn-drawer-close" id="btn-drawer-close" aria-label="Cerrar Menú">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="drawer-user-card">
+                    <div class="user-avatar-initial" id="drawer-user-initial">A</div>
+                    <div class="drawer-user-info">
+                        <strong id="drawer-user-name">Usuario</strong>
+                        <span class="user-role-tag" id="drawer-user-role">Admin</span>
+                    </div>
+                </div>
+
+                <div class="drawer-menu-scroll" id="drawer-nav-menu">
+                    <!-- Injected by app.js -->
+                </div>
+
+                <div class="drawer-footer">
+                    <button class="btn btn-secondary btn-sm" id="drawer-btn-logout" style="width: 100%; justify-content: center; gap: 0.5rem;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script src="/js/components/icons.js"></script>
+    <script src="/js/components/toast.js"></script>
+    <script src="/js/components/modal.js"></script>
+    <script src="/js/components/infinityScroll.js"></script>
+    <script src="/js/components/punchClock.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+
+    <!-- Functional Modules -->
+    <script src="/js/modules/dashboard.js"></script>
+    <script src="/js/modules/departments.js"></script>
+    <script src="/js/modules/employees.js"></script>
+    <script src="/js/modules/attendance.js"></script>
+    <script src="/js/modules/vacations.js"></script>
+    <script src="/js/modules/incidents.js"></script>
+    <script src="/js/modules/payroll.js"></script>
+    <script src="/js/modules/reports.js"></script>
+    <script src="/js/modules/users.js"></script>
+    <script src="/js/modules/settings.js"></script>
+
+    <!-- App Entry -->
+    <script src="/js/app.js"></script>
+</body>
+</html>

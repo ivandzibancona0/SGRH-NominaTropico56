@@ -1,0 +1,94 @@
+# ==========================================================
+# SGRH - TRÓPICO 56: .gitignore
+# Sistema de Gestión de Recursos Humanos
+# ==========================================================
+
+# 1. Dependencias de Node.js
+node_modules/
+package-lock.json.bak
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+
+# 2. Variables de Entorno y Credenciales (Mantener Privado)
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+
+# 3. Respaldos y Volcados de Base de Datos MySQL
+*.sql
+*.dump
+*.sql.gz
+backup_*.json
+backups/
+
+# Conservar siempre el esquema DDL oficial de la base de datos
+!database/schema.sql
+
+# 4. Archivos de Respaldo, Copias Temporales y Edición
+*.bak
+*.backup
+*.old
+*.orig
+*.tmp
+*.temp
+*~
+
+# 5. Directorios Temporales y Pruebas
+scratch/
+temp/
+tmp/
+uploads/
+temp_uploads/
+
+# 6. Registros y Depuración (Logs)
+logs/
+*.log
+
+# 7. Cachés y Compilados
+.cache/
+dist/
+build/
+coverage/
+.nyc_output/
+.eslintcache
+.stylelintcache
+
+# 8. Archivos del Sistema Operativo
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+.fuse_hidden*
+.directory
+.Trash-*
+
+# 9. Editores de Código e IDEs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+.cursor/

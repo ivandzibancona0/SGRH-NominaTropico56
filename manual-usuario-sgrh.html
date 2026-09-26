@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Manual de Usuario - SGRH Trópico 56</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --color-primary: #D95B28;
+            --color-primary-hover: #BF4717;
+            --color-primary-light: #FBECE4;
+            --color-accent: #66A89B;
+            --color-accent-dark: #4D857A;
+            --color-accent-light: #EBF4F2;
+            --color-gold: #F8B319;
+            --color-gold-light: #FEF6E4;
+            --color-dark: #2A2421;
+            --color-dark-light: #3D3531;
+            --color-muted: #7A6F68;
+            --color-border: #E8DCD1;
+            --color-border-light: #F2EBE3;
+            --color-bg: #FAF5EE;
+            --color-bg-subtle: #F4ECE1;
+            --color-card: #FFFFFF;
+            --color-success: #2E8B57;
+            --color-success-bg: #E8F6EE;
+            --color-warning: #D97706;
+            --color-warning-bg: #FEF3C7;
+            --color-danger: #DC2626;
+            --color-danger-bg: #FEE2E2;
+            --color-info: #0284C7;
+            --color-info-bg: #E0F2FE;
+
+            --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        @page {
+            size: letter portrait;
+            margin: 16mm 16mm 16mm 16mm;
+            @top-right {
+                content: "SGRH · TRÓPICO 56";
+                font-family: 'Outfit', sans-serif;
+                font-size: 8pt;
+                font-weight: 600;
+                color: #7A6F68;
+                letter-spacing: 1px;
+            }
+            @bottom-left {
+                content: "Manual de Usuario y Operación · Versión 1.0";
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 8pt;
+                color: #7A6F68;
+            }
+            @bottom-right {
+                content: "Página " counter(page);
+                font-family: 'Plus Jakarta Sans', sans-serif;
+                font-size: 8pt;
+                font-weight: 600;
+                color: #D95B28;
+            }
+        }
+
+        @page:first {
+            margin: 0;
+            @top-right { content: normal; }
+            @bottom-left { content: normal; }
+            @bottom-right { content: normal; }
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--color-dark);
+            background-color: #FFFFFF;
+            line-height: 1.5;
+            font-size: 9.2pt;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        h1, h2, h3, h4, h5 {
+            font-family: var(--font-heading);
+            color: var(--color-dark);
+            line-height: 1.2;
+        }
+
+        p {
+            margin-bottom: 0.6rem;
+            color: #3D3531;
+        }
+
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+        }
+
+        .avoid-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* 1. PORTADA INSTITUCIONAL */
+        .cover-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 55mm 25mm 30mm 25mm;
+            background: linear-gradient(145deg, #FFFFFF 0%, #FAF5EE 65%, #F5ECE0 100%);
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 14mm;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-hover) 50%, var(--color-gold) 100%);
+        }
+
+        .cover-page::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 8mm;
+            background: var(--color-dark);
+        }
+
+        .cover-badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            border: 1px solid rgba(217, 91, 40, 0.25);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-family: var(--font-heading);
+            font-size: 9pt;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            width: fit-content;
+        }
+
+        .cover-logo-wrapper {
+            margin-bottom: 30px;
+        }
+
+        .cover-logo {
+            width: 140px;
+            height: 140px;
+            filter: drop-shadow(0 12px 24px rgba(42, 36, 33, 0.12));
+        }
+
+        .cover-title-block h1 {
+            font-size: 34pt;
+            font-weight: 800;
+            color: var(--color-dark);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .cover-title-block h1 span {
+            color: var(--color-primary);
+        }
+
+        .cover-title-block .subtitle {
+            font-size: 16pt;
+            font-weight: 400;
+            color: var(--color-muted);
+            margin-bottom: 25px;
+            line-height: 1.35;
+        }
+
+        .cover-accent-line {
+            width: 90px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-gold));
+            border-radius: 4px;
+            margin-bottom: 35px;
+        }
+
+        .cover-features-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .cover-feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #FFFFFF;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 10px rgba(42, 36, 33, 0.03);
+        }
+
+        .cover-feature-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--color-primary);
+            flex-shrink: 0;
+        }
+
+        .cover-feature-text {
+            font-size: 9pt;
+            font-weight: 600;
+            color: var(--color-dark);
+        }
+
+        .cover-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding-top: 25px;
+            border-top: 1px solid var(--color-border);
+        }
+
+        .cover-meta-item .meta-label {
+            font-size: 7.5pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--color-muted);
+            margin-bottom: 4px;
+        }
+
+        .cover-meta-item .meta-val {
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        /* 2. ENCABEZADOS Y SECCIONES */
+        .header-section {
+            border-bottom: 2px solid var(--color-border);
+            padding-bottom: 10px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-icon-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background-color: var(--color-primary-light);
+            color: var(--color-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .section-icon-badge svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .header-title-group h2 {
+            font-size: 16pt;
+            font-weight: 700;
+            color: var(--color-dark);
+            letter-spacing: -0.3px;
+        }
+
+        .header-number {
+            font-family: var(--font-heading);
+            font-size: 22pt;
+            font-weight: 800;
+            color: var(--color-border);
+            line-height: 1;
+        }
+
+        h3 {
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-top: 14px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h3 svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        h4 {
+            font-size: 9.5pt;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        /* CAJAS DE INFORMACIÓN */
+        .callout {
+            border-left: 4px solid var(--color-primary);
+            background-color: var(--color-primary-light);
+            padding: 10px 14px;
+            border-radius: 0 8px 8px 0;
+            margin: 10px 0;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .callout-accent {
+            border-left-color: var(--color-accent);
+            background-color: var(--color-accent-light);
+            color: var(--color-accent-dark);
+        }
+
+        .callout-gold {
+            border-left-color: var(--color-gold);
+            background-color: var(--color-gold-light);
+            color: #9A6800;
+        }
+
+        .callout-dark {
+            border-left-color: var(--color-dark);
+            background-color: var(--color-bg-subtle);
+            color: var(--color-dark);
+        }
+
+        .callout-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            color: inherit;
+        }
+
+        .callout p {
+            margin: 0;
+            font-size: 8.5pt;
+            line-height: 1.4;
+        }
+
+        /* TABLAS */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 14px 0;
+            font-size: 8pt;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead tr {
+            background: linear-gradient(90deg, var(--color-primary-hover) 0%, var(--color-primary) 100%);
+            color: #FFFFFF;
+        }
+
+        th {
+            font-family: var(--font-heading);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-size: 7.5pt;
+            padding: 7px 10px;
+            text-align: left;
+            border-right: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        th:last-child {
+            border-right: none;
+        }
+
+        td {
+            padding: 5.5px 10px;
+            border-bottom: 1px solid var(--color-border-light);
+            border-right: 1px solid var(--color-border-light);
+            color: var(--color-dark);
+            vertical-align: middle;
+        }
+
+        td:last-child {
+            border-right: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: var(--color-bg);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 7pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .badge-primary { background-color: var(--color-primary-light); color: var(--color-primary); }
+        .badge-accent { background-color: var(--color-accent-light); color: var(--color-accent-dark); }
+        .badge-gold { background-color: var(--color-gold-light); color: #9A6800; }
+        .badge-success { background-color: var(--color-success-bg); color: var(--color-success); }
+        .badge-danger { background-color: var(--color-danger-bg); color: var(--color-danger); }
+        .badge-warning { background-color: var(--color-warning-bg); color: var(--color-warning); }
+        .badge-dark { background-color: var(--color-dark-light); color: #FFFFFF; }
+
+        /* MOCKUPS / CARDS */
+        .visual-mockup {
+            background-color: #FFFFFF;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 14px;
+            margin: 12px 0;
+            box-shadow: 0 4px 10px rgba(42, 36, 33, 0.03);
+            position: relative;
+        }
+
+        .mockup-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .mockup-title {
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 9pt;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mockup-title svg {
+            width: 15px;
+            height: 15px;
+            color: var(--color-primary);
+        }
+
+        .mockup-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .mockup-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background-color: var(--color-border);
+        }
+
+        /* STEPS GRID */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin: 12px 0;
+        }
+
+        .step-card {
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 12px;
+            position: relative;
+        }
+
+        .step-number-badge {
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-hover));
+            color: #FFFFFF;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-heading);
+            font-size: 7.5pt;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .step-card h5 {
+            font-size: 9pt;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-bottom: 3px;
+        }
+
+        .step-card p {
+            font-size: 7.8pt;
+            color: var(--color-muted);
+            margin: 0;
+            line-height: 1.35;
+        }
+
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .three-cols {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .styled-list {
+            list-style: none;
+            margin: 8px 0;
+        }
+
+        .styled-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 5px;
+            font-size: 8.5pt;
+            color: #3D3531;
+        }
+
+        .styled-list li::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 6px;
+            width: 6px;
+            height: 6px;
+            background-color: var(--color-primary);
+            border-radius: 2px;
+            transform: rotate(45deg);
+        }
+
+        /* KEYPAD MOCKUP */
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            max-width: 200px;
+            margin: 8px auto;
+        }
+
+        .keypad-key {
+            background-color: #FFFFFF;
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            font-family: var(--font-heading);
+            font-size: 11pt;
+            font-weight: 700;
+            color: var(--color-dark);
+            box-shadow: 0 2px 4px rgba(42, 36, 33, 0.03);
+        }
+
+        .keypad-key.action {
+            background-color: var(--color-primary);
+            color: #FFFFFF;
+            border-color: var(--color-primary-hover);
+        }
+
+        .keypad-display {
+            background-color: var(--color-bg);
+            border: 1px solid var(--color-border);
+            border-radius: 6px;
+            padding: 8px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 14pt;
+            font-weight: 700;
+            letter-spacing: 5px;
+            color: var(--color-dark);
+            margin-bottom: 8px;
+        }
+
+        /* MINI KPI CARD */
+        .kpi-card {
+            background: #FFFFFF;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kpi-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .kpi-val {
+            font-family: var(--font-heading);
+            font-size: 13pt;
+            font-weight: 800;
+            color: var(--color-dark);
+            line-height: 1;
+        }
+
+        .kpi-label {
+            font-size: 7pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--color-muted);
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        /* RECIBO DE NÓMINA */
+        .receipt-card {
+            border: 1px dashed var(--color-border);
+            background-color: #FAFAFA;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 7.5pt;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+
+        .receipt-header h6 {
+            font-family: var(--font-heading);
+            font-size: 9.5pt;
+            font-weight: 700;
+            color: var(--color-dark);
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2.5px 0;
+            border-bottom: 1px dotted var(--color-border-light);
+        }
+
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            padding-top: 5px;
+            margin-top: 5px;
+            border-top: 2px solid var(--color-dark);
+            font-weight: 800;
+            font-family: var(--font-heading);
+            font-size: 9pt;
+        }
+
+        .signature-box {
+            margin-top: 16px;
+            border-top: 1px solid var(--color-muted);
+            text-align: center;
+            padding-top: 3px;
+            font-size: 7pt;
+            color: var(--color-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 1: PORTADA EJECUTIVA                              -->
+    <!-- ======================================================== -->
+    <div class="cover-page page-break">
+        <div>
+            <div class="cover-badge-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Documento Oficial de Operación
+            </div>
+
+            <div class="cover-logo-wrapper">
+                <svg class="cover-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+                    <defs>
+                        <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#F8B319" />
+                            <stop offset="100%" stop-color="#F29E0B" />
+                        </linearGradient>
+                    </defs>
+                    <rect width="500" height="500" rx="32" fill="url(#logoBg)"/>
+                    <rect x="200" y="105" width="100" height="100" rx="10" transform="rotate(45 250 155)" fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
+                    <rect x="208" y="113" width="84" height="84" rx="6" transform="rotate(45 250 155)" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" opacity="0.9"/>
+                    <text x="250" y="167" font-family="'Outfit', sans-serif" font-size="44" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">56</text>
+                    <path d="M 195 245 L 210 230" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+                    <text x="250" y="315" font-family="'Outfit', sans-serif" font-size="70" font-weight="300" fill="#FFFFFF" text-anchor="middle" letter-spacing="12">TRÓPICO</text>
+                    <text x="250" y="365" font-family="'Outfit', sans-serif" font-size="16" font-weight="600" fill="#FFFFFF" text-anchor="middle" letter-spacing="6" opacity="0.95">RESTAURANTE</text>
+                </svg>
+            </div>
+
+            <div class="cover-title-block">
+                <h1>Manual de Usuario <span>SGRH</span></h1>
+                <div class="subtitle">Sistema de Gestión de Recursos Humanos, Asistencias, Mermas y Cálculo de Nóminas</div>
+                <div class="cover-accent-line"></div>
+            </div>
+
+            <div class="cover-features-list">
+                <div class="cover-feature-item">
+                    <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="cover-feature-text">Reloj Checador con PIN y Teclado</span>
+                </div>
+                <div class="cover-feature-item">
+                    <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 14h2M12 14h6M6 17h4"/></svg>
+                    <span class="cover-feature-text">Pre-Nómina y Recibos Oficiales</span>
+                </div>
+                <div class="cover-feature-item">
+                    <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <span class="cover-feature-text">Vacaciones LFT (Vacaciones Dignas)</span>
+                </div>
+                <div class="cover-feature-item">
+                    <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span class="cover-feature-text">Reportes y Exportación Excel BOM</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-meta-grid">
+            <div class="cover-meta-item">
+                <div class="meta-label">Establecimiento</div>
+                <div class="meta-val">Trópico 56 Restaurante</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="meta-label">Versión de Sistema</div>
+                <div class="meta-val">v1.0.0 Relacional MySQL</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="meta-label">Destinatarios</div>
+                <div class="meta-val">Administración y Operación</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 2: CONTROL DOCUMENTAL E ÍNDICE                    -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <h2>Control Documental e Índice General</h2>
+            </div>
+            <div class="header-number">01</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Historial de Revisiones
+        </h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 15%;">Versión</th>
+                    <th style="width: 20%;">Fecha</th>
+                    <th style="width: 35%;">Descripción del Cambio</th>
+                    <th style="width: 30%;">Responsable</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-primary">v1.0.0</span></td>
+                    <td>21 de Septiembre, 2026</td>
+                    <td>Emisión inicial del manual operativo integral del SGRH Trópico 56.</td>
+                    <td>Equipo de Desarrollo y Capital Humano</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Contenido del Manual
+        </h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 12%;">Sección</th>
+                    <th style="width: 76%;">Módulo o Tema Desarrollado</th>
+                    <th style="width: 12%; text-align: center;">Página</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>01</strong></td>
+                    <td>Control Documental, Alcance e Índice General</td>
+                    <td style="text-align: center;">2</td>
+                </tr>
+                <tr>
+                    <td><strong>02</strong></td>
+                    <td>Introducción, Arquitectura Tecnológica y Requisitos de Acceso</td>
+                    <td style="text-align: center;">3</td>
+                </tr>
+                <tr>
+                    <td><strong>03</strong></td>
+                    <td>Seguridad, Autenticación y Matriz de Roles (RBAC)</td>
+                    <td style="text-align: center;">4</td>
+                </tr>
+                <tr>
+                    <td><strong>04</strong></td>
+                    <td>Navegación, Entorno Visual (App Shell) e Iconografía Minimalista</td>
+                    <td style="text-align: center;">5</td>
+                </tr>
+                <tr>
+                    <td><strong>05</strong></td>
+                    <td>Módulo 1: Panel General (Dashboard) y Módulo 2: Puestos y Departamentos</td>
+                    <td style="text-align: center;">6</td>
+                </tr>
+                <tr>
+                    <td><strong>06</strong></td>
+                    <td>Módulo 3: Directorio de Colaboradores (Expediente Digital, Altas y Bajas)</td>
+                    <td style="text-align: center;">7</td>
+                </tr>
+                <tr>
+                    <td><strong>07</strong></td>
+                    <td>Módulo 4: Control de Asistencias, Reloj Checador Modal y Pase de Lista</td>
+                    <td style="text-align: center;">8</td>
+                </tr>
+                <tr>
+                    <td><strong>08</strong></td>
+                    <td>Módulo 5: Vacaciones (Ley Federal del Trabajo - Vacaciones Dignas)</td>
+                    <td style="text-align: center;">9</td>
+                </tr>
+                <tr>
+                    <td><strong>09</strong></td>
+                    <td>Módulo 6: Incidencias, Mermas Operativas y Esquemas de Amortización</td>
+                    <td style="text-align: center;">10</td>
+                </tr>
+                <tr>
+                    <td><strong>10</strong></td>
+                    <td>Módulo 7: Gestión y Cálculo de Nóminas (Pre-Nómina Interactiva y Recibos)</td>
+                    <td style="text-align: center;">11</td>
+                </tr>
+                <tr>
+                    <td><strong>11</strong></td>
+                    <td>Módulo 8: Centro de Reportes, Filtros y Exportación a Microsoft Excel BOM</td>
+                    <td style="text-align: center;">12</td>
+                </tr>
+                <tr>
+                    <td><strong>12</strong></td>
+                    <td>Módulo 9: Gestión de Usuarios y Módulo 10: Configuración y Respaldos</td>
+                    <td style="text-align: center;">13</td>
+                </tr>
+                <tr>
+                    <td><strong>13</strong></td>
+                    <td>Preguntas Frecuentes, Solución de Problemas (Troubleshooting) y Glosario</td>
+                    <td style="text-align: center;">14</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-gold">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+                <strong>Nota de Confidencialidad:</strong> La información procesada por el SGRH comprende datos salariales, fiscales y personales protegidos. Su uso es exclusivo para el personal autorizado de Trópico 56 Restaurante.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 3: INTRODUCCIÓN Y ARQUITECTURA                    -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <h2>Introducción y Requisitos del Sistema</h2>
+            </div>
+            <div class="header-number">02</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            Propósito del Sistema
+        </h3>
+        <p>
+            El <strong>Sistema de Gestión de Recursos Humanos (SGRH) de Trópico 56</strong> centraliza el control de asistencias con PIN, la gestión de mermas y roturas, el cálculo integral de nóminas semanales/quincenales, y el cumplimiento estricto de la Ley Federal del Trabajo de México (Vacaciones Dignas).
+        </p>
+
+        <div class="three-cols" style="margin: 12px 0;">
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background-color: var(--color-primary-light); color: var(--color-primary);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val">Cero</div>
+                    <div class="kpi-label">Retardo No Registrado</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background-color: var(--color-accent-light); color: var(--color-accent-dark);">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val">100%</div>
+                    <div class="kpi-label">Amortización de Mermas</div>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background-color: var(--color-gold-light); color: #9A6800;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val">LFT</div>
+                    <div class="kpi-label">Vacaciones Dignas</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            Requerimientos Técnicos
+        </h3>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Componente</th>
+                    <th style="width: 35%;">Requisito Mínimo</th>
+                    <th style="width: 40%;">Recomendación Óptima</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Navegador Web</strong></td>
+                    <td>Google Chrome 90+, Microsoft Edge 90+, Firefox 88+</td>
+                    <td>Google Chrome o Microsoft Edge actualizado a la última versión.</td>
+                </tr>
+                <tr>
+                    <td><strong>Resolución</strong></td>
+                    <td>1024 x 768 píxeles (Escritorio) o Móvil 360px</td>
+                    <td>1920 x 1080 píxeles para vista óptima de Pre-Nómina masiva.</td>
+                </tr>
+                <tr>
+                    <td><strong>Servidor</strong></td>
+                    <td>Node.js v16.x o superior</td>
+                    <td>Node.js v20.x LTS con base de datos MySQL 8.0+.</td>
+                </tr>
+                <tr>
+                    <td><strong>Conectividad</strong></td>
+                    <td>Red Local (LAN) o Acceso Localhost en Servidor</td>
+                    <td>Conexión Ethernet cableada para la terminal de pase de lista.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Puesta en Marcha Rápida (Windows)
+        </h3>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number-badge">1</div>
+                <h5>Ejecutar Lanzador</h5>
+                <p>Hacer doble clic sobre el archivo <code>SGRH - Trópico 56.bat</code> en la carpeta raíz.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">2</div>
+                <h5>Arranque Automático</h5>
+                <p>La consola iniciará la conexión con la base de datos MySQL y el servidor Express en el puerto 3000.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">3</div>
+                <h5>Navegación Directa</h5>
+                <p>El navegador predeterminado se abrirá de forma automática en <code>http://localhost:3000</code>.</p>
+            </div>
+        </div>
+
+        <div class="callout callout-accent">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <div>
+                <strong>Arquitectura Ligera:</strong> Aplicación SPA sin frameworks pesados, con diseño responsivo móvil/escritorio, MySQL relacional y conexión con pool optimizado.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 4: SEGURIDAD Y MATRIZ DE ROLES                    -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h2>Seguridad, Autenticación y Matriz de Roles</h2>
+            </div>
+            <div class="header-number">03</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+            Inicio de Sesión y Credenciales Iniciales
+        </h3>
+        <p>
+            El acceso requiere credenciales validadas mediante JSON Web Tokens (JWT) con sesión activa de 24 horas y contraseñas protegidas por cifrado unidireccional bcrypt.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 22%;">Perfil / Rol</th>
+                    <th style="width: 18%;">Usuario</th>
+                    <th style="width: 20%;">Contraseña Inicial</th>
+                    <th style="width: 40%;">Propósito y Alcance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="badge badge-primary">Administrador</span></td>
+                    <td><code>admin</code></td>
+                    <td><code>admin123</code></td>
+                    <td>Control total del sistema, nóminas, configuración, auditoría y respaldos.</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-accent">Estándar</span></td>
+                    <td><code>estandar</code></td>
+                    <td><code>tropico123</code></td>
+                    <td>Operación de asistencias, checador, consulta de colaboradores y mermas.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Matriz de Permisos por Rol (RBAC)
+        </h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 44%;">Módulo o Funcionalidad</th>
+                    <th style="width: 28%; text-align: center;">Rol Administrador</th>
+                    <th style="width: 28%; text-align: center;">Rol Estándar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Panel General (Dashboard) y Métricas</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                </tr>
+                <tr>
+                    <td>Reloj Checador (PIN) y Pase de Lista</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                </tr>
+                <tr>
+                    <td>Plantilla de Colaboradores (Directorio)</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Lectura y Alta</span></td>
+                </tr>
+                <tr>
+                    <td>Baja Definitiva de Colaboradores</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Permitido</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Restringido</span></td>
+                </tr>
+                <tr>
+                    <td>Puestos y Departamentos (Salarios Base)</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Creación / Edición</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Solo Lectura</span></td>
+                </tr>
+                <tr>
+                    <td>Incidencias y Mermas (Cargos y Cuotas)</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Registro Inicial</span></td>
+                </tr>
+                <tr>
+                    <td>Gestión de Nóminas (Pre-Nómina y Cierre)</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Restringido</span></td>
+                </tr>
+                <tr>
+                    <td>Emisión e Impresión de Recibos de Pago</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Permitido</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Restringido</span></td>
+                </tr>
+                <tr>
+                    <td>Centro de Reportes y Descarga Excel BOM</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Filtro Básico</span></td>
+                </tr>
+                <tr>
+                    <td>Administración de Usuarios y Privilegios</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Restringido</span></td>
+                </tr>
+                <tr>
+                    <td>Configuración, Respaldos y Mantenimiento</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                    <td style="text-align: center;"><span class="badge badge-danger">Restringido</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="callout callout-primary">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div>
+                <strong>Recomendación de Seguridad:</strong> Se aconseja modificar las contraseñas iniciales de inmediato desde el módulo de <em>Configuración &gt; Mi Perfil</em>.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 5: ENTORNO VISUAL E ICONOGRAFÍA                   -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <h2>Entorno Visual e Iconografía Minimalista</h2>
+            </div>
+            <div class="header-number">04</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            Estructura de la Interfaz (App Shell)
+        </h3>
+        <p>
+            El sistema opera bajo un entorno unificado compuesto por tres áreas de interacción permanente:
+        </p>
+
+        <div class="visual-mockup">
+            <div class="mockup-header">
+                <div class="mockup-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                    Distribución de Pantalla de la Aplicación SGRH
+                </div>
+                <div class="mockup-dots">
+                    <div class="mockup-dot"></div>
+                    <div class="mockup-dot"></div>
+                    <div class="mockup-dot"></div>
+                </div>
+            </div>
+
+            <div style="border: 1px solid var(--color-border); border-radius: 6px; overflow: hidden; background: #FFF;">
+                <div style="background: var(--color-dark); color: #FFF; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; font-size: 7.5pt;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background: var(--color-gold); color: var(--color-dark); font-weight: 800; padding: 2px 5px; border-radius: 4px; font-size: 7pt;">56</span>
+                        <strong>TRÓPICO 56</strong> · Panel Administrativo
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="background: var(--color-primary); padding: 2px 6px; border-radius: 4px; font-size: 7pt; font-weight: 700;">Reloj Checador</span>
+                        <span>Admin General</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; height: 90px;">
+                    <div style="width: 28%; background: var(--color-bg); border-right: 1px solid var(--color-border); padding: 8px; font-size: 7pt;">
+                        <div style="color: var(--color-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; font-size: 6pt;">Navegación</div>
+                        <div style="background: var(--color-primary-light); color: var(--color-primary); font-weight: 700; padding: 3px 6px; border-radius: 4px; margin-bottom: 3px;">Dashboard</div>
+                        <div style="color: var(--color-dark); padding: 3px 6px;">Colaboradores</div>
+                        <div style="color: var(--color-dark); padding: 3px 6px;">Asistencias</div>
+                        <div style="color: var(--color-dark); padding: 3px 6px;">Nóminas</div>
+                    </div>
+                    <div style="width: 72%; padding: 10px; background: #FFFFFF; font-size: 7.5pt;">
+                        <div style="font-weight: 700; color: var(--color-dark); margin-bottom: 6px;">Área de Trabajo Dinámica (SPA)</div>
+                        <p style="font-size: 7pt; color: var(--color-muted); margin: 0;">
+                            Renderizado instantáneo sin recargas de página. Filtros reactivos, scroll infinito y edición interactiva.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            Glosario de Iconos Vectoriales del Sistema
+        </h3>
+        <p>
+            El sistema prescinde totalmente de emoticonos. Utiliza símbolos vectoriales estandarizados de alta precisión:
+        </p>
+
+        <div class="two-cols">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%; text-align: center;">Icono</th>
+                        <th style="width: 40%;">Nombre</th>
+                        <th style="width: 40%;">Significado Operativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></td>
+                        <td><strong>Dashboard</strong></td>
+                        <td>Panel general de KPIs y resumen del día.</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></td>
+                        <td><strong>Colaboradores</strong></td>
+                        <td>Expediente, altas y administración de plantilla.</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></td>
+                        <td><strong>Reloj Checador</strong></td>
+                        <td>Registro con PIN de entrada o salida.</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></td>
+                        <td><strong>Pase de Lista</strong></td>
+                        <td>Matriz masiva diaria de turnos.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%; text-align: center;">Icono</th>
+                        <th style="width: 40%;">Nombre</th>
+                        <th style="width: 40%;">Significado Operativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></td>
+                        <td><strong>Nóminas</strong></td>
+                        <td>Pre-nómina, retenciones y recibos.</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></td>
+                        <td><strong>Incidencias</strong></td>
+                        <td>Roturas de equipo, mermas y cuotas.</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg></td>
+                        <td><strong>Vacaciones</strong></td>
+                        <td>Solicitudes y cómputo de Ley (LFT).</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; color: var(--color-primary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></td>
+                        <td><strong>Reportes</strong></td>
+                        <td>Descargas analíticas a Microsoft Excel.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 6: DASHBOARD Y DEPARTAMENTOS                      -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+                </div>
+                <h2>Módulo 1: Dashboard y Módulo 2: Departamentos</h2>
+            </div>
+            <div class="header-number">05</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            Módulo 1: Panel General (Dashboard)
+        </h3>
+        <p>
+            El Dashboard ofrece un panorama instantáneo del estado operativo del restaurante con cuatro indicadores cardinales:
+        </p>
+
+        <div class="two-cols" style="margin: 10px 0;">
+            <div class="step-card">
+                <h5>Colaboradores en Nómina Activa</h5>
+                <p>Total de trabajadores en estado <em>Activo</em> con contrato vigente listos para programación de turnos y pago.</p>
+            </div>
+            <div class="step-card">
+                <h5>Porcentaje de Asistencia Diaria</h5>
+                <p>Proporción de empleados que han marcado asistencia el día en curso frente al total esperado de la plantilla.</p>
+            </div>
+            <div class="step-card">
+                <h5>Monto en Mermas por Recuperar</h5>
+                <p>Suma acumulada de saldo pendiente en cuotas por roturas o pérdidas imputadas al personal.</p>
+            </div>
+            <div class="step-card">
+                <h5>Proyección de Nómina del Periodo</h5>
+                <p>Estimación del total neto a pagar considerando sueldos base, bonos y deducciones aplicadas.</p>
+            </div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M13 7l6 3v11"/></svg>
+            Módulo 2: Puestos y Departamentos
+        </h3>
+        <p>
+            Define la estructura organizativa de Trópico 56. Cada puesto cuenta con un salario diario base sugerido vinculado automáticamente al registrar colaboradores.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Departamento</th>
+                    <th style="width: 35%;">Puesto Clave</th>
+                    <th style="width: 20%;">Salario Base Sugerido</th>
+                    <th style="width: 20%;">Tipo de Turno</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Cocina</strong></td>
+                    <td>Chef de Partida / Cocinero A</td>
+                    <td>$450.00 MXN / día</td>
+                    <td>Matutino / Vespertino</td>
+                </tr>
+                <tr>
+                    <td><strong>Barra</strong></td>
+                    <td>Bartender Titular / Mixólogo</td>
+                    <td>$400.00 MXN / día</td>
+                    <td>Vespertino / Nocturno</td>
+                </tr>
+                <tr>
+                    <td><strong>Salón y Servicio</strong></td>
+                    <td>Capitán de Meseros / Mesero</td>
+                    <td>$320.00 MXN / día + Propinas</td>
+                    <td>Rolado</td>
+                </tr>
+                <tr>
+                    <td><strong>Administración</strong></td>
+                    <td>Gerente Operativo / Compras</td>
+                    <td>$650.00 MXN / día</td>
+                    <td>Tiempo Completo</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Procedimiento para Crear o Editar un Puesto:</h4>
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number-badge">1</div>
+                <h5>Nuevo Puesto</h5>
+                <p>Hacer clic en el botón <strong>Nuevo Puesto</strong> en la barra superior del módulo.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">2</div>
+                <h5>Definir Datos</h5>
+                <p>Indicar nombre del puesto, seleccionar departamento padre y definir salario diario base.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">3</div>
+                <h5>Guardar Cambios</h5>
+                <p>Guardar el registro para que quede inmediatamente disponible en el catálogo de personal.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 7: COLABORADORES Y EXPEDIENTES                    -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <h2>Módulo 3: Directorio de Colaboradores</h2>
+            </div>
+            <div class="header-number">06</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Expediente Digital del Trabajador
+        </h3>
+        <p>
+            El expediente digital centraliza la información laboral, legal y fiscal del colaborador, sirviendo como fuente única de verdad para la nómina y reportes oficiales.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Campo de Registro</th>
+                    <th style="width: 30%;">Formato / Validación</th>
+                    <th style="width: 45%;">Impacto en el Sistema</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Código de Empleado</strong></td>
+                    <td>Numérico o Alfanumérico (ej. <code>EMP-001</code>)</td>
+                    <td>Identificador único para el Reloj Checador y asignación de incidencias.</td>
+                </tr>
+                <tr>
+                    <td><strong>Nombres y Apellidos</strong></td>
+                    <td>Texto completo oficial</td>
+                    <td>Impresión en contratos, listas de asistencia y recibos de pago.</td>
+                </tr>
+                <tr>
+                    <td><strong>RFC / CURP / NSS</strong></td>
+                    <td>Validación oficial mexicana (SAT / IMSS)</td>
+                    <td>Requisitos indispensables para timbrado y reportes fiscales en Excel.</td>
+                </tr>
+                <tr>
+                    <td><strong>Fecha de Ingreso</strong></td>
+                    <td>Formato <code>AAAA-MM-DD</code></td>
+                    <td>Determina el cómputo automático de antigüedad para Vacaciones Dignas (LFT).</td>
+                </tr>
+                <tr>
+                    <td><strong>Salario Diario Base</strong></td>
+                    <td>Valor monetario decimal (MXN)</td>
+                    <td>Cálculo de percepciones ordinarias, horas extra y prima vacacional.</td>
+                </tr>
+                <tr>
+                    <td><strong>PIN de Checador</strong></td>
+                    <td>Clave numérica secreta (4 dígitos)</td>
+                    <td>Autenticación rápida e infalsificable en el Reloj Checador modal.</td>
+                </tr>
+                <tr>
+                    <td><strong>Estatus Laboral</strong></td>
+                    <td><em>Activo</em>, <em>Inactivo</em>, <em>Vacaciones</em>, <em>Permiso</em></td>
+                    <td>Filtra la inclusión en el pase de lista y nómina semanal/quincenal.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            Gestión de Bajas Operativas
+        </h3>
+
+        <div class="two-cols">
+            <div class="visual-mockup" style="margin: 0;">
+                <div class="mockup-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    Baja desde Formulario de Edición
+                </div>
+                <p style="font-size: 7.8pt; color: var(--color-muted); margin-top: 6px;">
+                    Al cambiar a <strong>Inactivo</strong>, se solicita la <em>Fecha de Baja</em>. Esto congela el cómputo de vacaciones y previene pagos subsecuentes.
+                </p>
+            </div>
+
+            <div class="visual-mockup" style="margin: 0;">
+                <div class="mockup-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                    Baja Rápida por Acción Directa
+                </div>
+                <p style="font-size: 7.8pt; color: var(--color-muted); margin-top: 6px;">
+                    El botón de baja rápida en la tabla abre confirmación solicitando fecha efectiva, preservando todo el historial contable.
+                </p>
+            </div>
+        </div>
+
+        <div class="callout callout-dark" style="margin-top: 10px;">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div>
+                <strong>Integridad Referencial:</strong> Los colaboradores no se eliminan físicamente de la base de datos MySQL; pasan a estado inactivo para proteger los registros fiscales.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 8: ASISTENCIAS Y RELOJ CHECADOR                   -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </div>
+                <h2>Módulo 4: Control de Asistencias y Checador</h2>
+            </div>
+            <div class="header-number">07</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/></svg>
+            Reloj Checador Modal con Teclado Numérico
+        </h3>
+        <p>
+            Accesible en todo momento desde el botón <strong>Reloj Checador</strong> en la barra superior. Diseñado para tablets o terminales táctiles (POS).
+        </p>
+
+        <div class="two-cols">
+            <div>
+                <h4>Flujo de Marcaje:</h4>
+                <ul class="styled-list">
+                    <li>El colaborador ingresa su <strong>PIN de 4 dígitos</strong> usando el teclado virtual o físico.</li>
+                    <li>El sistema reconoce automáticamente el nombre y determina si corresponde a <strong>Entrada</strong> o <strong>Salida</strong>.</li>
+                    <li>Se emite confirmación visual con la hora exacta y cómputo automático de retardo si aplica.</li>
+                </ul>
+
+                <div class="callout callout-primary" style="margin-top: 10px;">
+                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div>
+                        <strong>Tolerancia de Entrada:</strong> Margen parametrizable (por defecto 15 min). Superado dicho lapso, se cataloga automáticamente como <em>Retardo</em>.
+                    </div>
+                </div>
+            </div>
+
+            <div class="visual-mockup" style="margin: 0; text-align: center;">
+                <div class="mockup-title" style="justify-content: center;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Interfaz del Reloj Checador
+                </div>
+                <div class="keypad-display">••••</div>
+                <div class="keypad-grid">
+                    <div class="keypad-key">1</div>
+                    <div class="keypad-key">2</div>
+                    <div class="keypad-key">3</div>
+                    <div class="keypad-key">4</div>
+                    <div class="keypad-key">5</div>
+                    <div class="keypad-key">6</div>
+                    <div class="keypad-key">7</div>
+                    <div class="keypad-key">8</div>
+                    <div class="keypad-key">9</div>
+                    <div class="keypad-key action" style="background: #991B1B;">C</div>
+                    <div class="keypad-key">0</div>
+                    <div class="keypad-key action">OK</div>
+                </div>
+            </div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Pase de Lista Masivo y Diario
+        </h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Colaborador</th>
+                    <th style="width: 18%;">Entrada</th>
+                    <th style="width: 18%;">Salida</th>
+                    <th style="width: 15%;">Horas Extra</th>
+                    <th style="width: 24%;">Estatus / Incidencia</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Carlos Mendoza</strong> (Cocina)</td>
+                    <td>08:02 AM</td>
+                    <td>04:15 PM</td>
+                    <td>0.0 hrs</td>
+                    <td><span class="badge badge-success">Asistencia Puntual</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Laura Gómez</strong> (Barra)</td>
+                    <td>04:22 PM</td>
+                    <td>--:--</td>
+                    <td>0.0 hrs</td>
+                    <td><span class="badge badge-warning">Retardo (7 min)</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Miguel Morales</strong> (Salón)</td>
+                    <td>--:--</td>
+                    <td>--:--</td>
+                    <td>0.0 hrs</td>
+                    <td><span class="badge badge-danger">Falta Injustificada</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Andrea Rivas</strong> (Cocina)</td>
+                    <td>08:00 AM</td>
+                    <td>06:30 PM</td>
+                    <td>2.5 hrs</td>
+                    <td><span class="badge badge-primary">Turno Extra</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="font-size: 8pt; color: var(--color-muted);">
+            <em>Nota sobre turnos pendientes:</em> Los turnos que aún no registran salida se indican con <code>--:--</code>, permitiendo registrar la salida manual antes del corte de nómina.
+        </p>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 9: VACACIONES LFT (VACACIONES DIGNAS)             -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </div>
+                <h2>Módulo 5: Vacaciones (Ley Federal del Trabajo)</h2>
+            </div>
+            <div class="header-number">08</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Motor de Vacaciones Dignas (México)
+        </h3>
+        <p>
+            El sistema incorpora de forma nativa la reforma legal de <strong>Vacaciones Dignas</strong>. Calcula automáticamente la antigüedad de cada colaborador según su fecha de ingreso:
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Años de Servicio Cumplidos</th>
+                    <th style="width: 25%;">Días de Vacaciones Pagadas</th>
+                    <th style="width: 25%;">Prima Vacacional Mínima</th>
+                    <th style="width: 25%;">Base de Aplicación</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Año 1</strong></td>
+                    <td>12 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Al cumplir primer aniversario</td>
+                </tr>
+                <tr>
+                    <td><strong>Año 2</strong></td>
+                    <td>14 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Al cumplir segundo aniversario</td>
+                </tr>
+                <tr>
+                    <td><strong>Año 3</strong></td>
+                    <td>16 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Al cumplir tercer aniversario</td>
+                </tr>
+                <tr>
+                    <td><strong>Año 4</strong></td>
+                    <td>18 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Al cumplir cuarto aniversario</td>
+                </tr>
+                <tr>
+                    <td><strong>Año 5</strong></td>
+                    <td>20 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Al cumplir quinto aniversario</td>
+                </tr>
+                <tr>
+                    <td><strong>De 6 a 10 años</strong></td>
+                    <td>22 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Incremento bianual según LFT</td>
+                </tr>
+                <tr>
+                    <td><strong>De 11 a 15 años</strong></td>
+                    <td>24 días laborables</td>
+                    <td>25% sobre sueldo diario</td>
+                    <td>Incremento bianual según LFT</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Ciclo de Solicitud y Aprobación de Vacaciones
+        </h3>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number-badge">1</div>
+                <h5>Registro de Solicitud</h5>
+                <p>Se selecciona el colaborador y el rango de fechas. El sistema valida el saldo disponible.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">2</div>
+                <h5>Aprobación</h5>
+                <p>El administrador autoriza la solicitud. Los días se descuentan del saldo devengado.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">3</div>
+                <h5>Prima Vacacional</h5>
+                <p>Al generar la nómina, se inyecta de forma automática el 25% de prima vacacional devengada.</p>
+            </div>
+        </div>
+
+        <div class="callout callout-accent">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <div>
+                <strong>Cálculo de Prima Vacacional:</strong> Fórmula legal: <code>(Días de Vacaciones) × (Salario Diario) × 0.25</code>. Se suma a las percepciones en la Pre-Nómina automáticamente.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 10: INCIDENCIAS Y MERMAS OPERATIVAS               -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <h2>Módulo 6: Incidencias y Mermas Operativas</h2>
+            </div>
+            <div class="header-number">09</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            Control de Roturas, Daños y Faltantes
+        </h3>
+        <p>
+            Permite registrar mermas por rotura de loza, cristalería, extravío de utensilios o faltantes en corte de caja, acordando planes de recuperación en cuotas.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Concepto de Incidencia</th>
+                    <th style="width: 25%;">Área Frecuente</th>
+                    <th style="width: 25%;">Modalidad de Cobro</th>
+                    <th style="width: 25%;">Estatus Operativo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Rotura de Cristalería</strong></td>
+                    <td>Barra / Salón</td>
+                    <td>Deducción en 1 exhibición</td>
+                    <td><span class="badge badge-warning">En Nómina</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Pérdida de Equipo de Cocina</strong></td>
+                    <td>Cocina Caliente</td>
+                    <td>Financiamiento en 4 cuotas</td>
+                    <td><span class="badge badge-primary">Cuotas Activas</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Faltante en Corte de Caja</strong></td>
+                    <td>Caja Principal</td>
+                    <td>Deducción quincenal</td>
+                    <td><span class="badge badge-danger">Pendiente</span></td>
+                </tr>
+                <tr>
+                    <td><strong>Rotura Accidental Justificada</strong></td>
+                    <td>Operación General</td>
+                    <td>Condonación administrativa</td>
+                    <td><span class="badge badge-success">Condonado</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Ciclo de Vida y Amortización en Nómina
+        </h3>
+
+        <div class="steps-container">
+            <div class="step-card">
+                <div class="step-number-badge">1</div>
+                <h5>Registro de Cargo</h5>
+                <p>Se describe el artículo, monto total, colaborador responsable y número pactado de cuotas.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">2</div>
+                <h5>Retención Automática</h5>
+                <p>Al procesar nómina, se descuenta la cuota de las percepciones líquidas del trabajador.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number-badge">3</div>
+                <h5>Finiquito de Deuda</h5>
+                <p>Cubierto el importe, el estado cambia a <em>Liquidado</em> sin más deducciones.</p>
+            </div>
+        </div>
+
+        <div class="callout callout-gold">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+                <strong>Límites Legales de Retención:</strong> Conforme al artículo 110 de la LFT, las deducciones aseguran que el trabajador perciba un monto superior al salario mínimo vigente.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 11: GESTIÓN Y CÁLCULO DE NÓMINAS                  -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 14h2M12 14h6M6 17h4"/></svg>
+                </div>
+                <h2>Módulo 7: Gestión y Cálculo de Nóminas</h2>
+            </div>
+            <div class="header-number">10</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Pre-Nómina Interactiva en Vivo
+        </h3>
+        <p>
+            La Pre-Nómina permite ajustar conceptos extraordinarios antes del cierre y timbrado interno del periodo:
+        </p>
+
+        <div class="two-cols">
+            <div>
+                <h4>Percepciones Computables:</h4>
+                <ul class="styled-list">
+                    <li><strong>Sueldo Base:</strong> <code>Días Trabajados × Salario Diario</code>.</li>
+                    <li><strong>Horas Extra:</strong> Importe proporcional devengado.</li>
+                    <li><strong>Festivos Laborados:</strong> Pago al doble según LFT.</li>
+                    <li><strong>Bonos y Comisiones:</strong> Productividad o ventas.</li>
+                    <li><strong>Prima Vacacional:</strong> 25%+ sobre días disfrutados.</li>
+                </ul>
+
+                <h4>Deducciones Aplicables:</h4>
+                <ul class="styled-list">
+                    <li><strong>Cuota de Mermas:</strong> Descuento de incidencias pactadas.</li>
+                    <li><strong>Retención IMSS:</strong> Aportación de seguridad social.</li>
+                    <li><strong>Retención ISR:</strong> Impuesto sobre la renta según tabulador.</li>
+                    <li><strong>Otras Deducciones:</strong> Anticipos o préstamos internos.</li>
+                </ul>
+            </div>
+
+            <div class="receipt-card">
+                <div class="receipt-header">
+                    <h6>TRÓPICO 56 RESTAURANTE</h6>
+                    <div style="font-size: 6.5pt; color: var(--color-muted);">RECIBO OFICIAL DE NÓMINA · PERIODO SEMANAL</div>
+                </div>
+                <div style="margin-bottom: 5px;">
+                    <div><strong>Colaborador:</strong> Carlos Mendoza (Cocina)</div>
+                    <div><strong>RFC:</strong> MEGC900101XYZ · <strong>NSS:</strong> 12345678901</div>
+                </div>
+
+                <div class="receipt-row">
+                    <span>Sueldo Base (7 días)</span>
+                    <span>$3,150.00</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Horas Extras (3 hrs)</span>
+                    <span>$236.25</span>
+                </div>
+                <div class="receipt-row">
+                    <span>Bono de Puntualidad</span>
+                    <span>$300.00</span>
+                </div>
+                <div class="receipt-row" style="color: var(--color-danger);">
+                    <span>(-) Cuota Merma Cristalería</span>
+                    <span>-$150.00</span>
+                </div>
+                <div class="receipt-row" style="color: var(--color-danger);">
+                    <span>(-) Retención IMSS</span>
+                    <span>-$84.50</span>
+                </div>
+                <div class="receipt-row" style="color: var(--color-danger);">
+                    <span>(-) Retención ISR</span>
+                    <span>-$120.00</span>
+                </div>
+
+                <div class="receipt-total">
+                    <span>TOTAL NETO A PAGAR:</span>
+                    <span>$3,331.75 MXN</span>
+                </div>
+
+                <div class="signature-box">
+                    Firma de Conformidad del Colaborador
+                </div>
+            </div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Impresión y Cierre Formal de Recibos
+        </h3>
+        <p>
+            Al pulsar <strong>Guardar y Cerrar Nómina</strong>, el sistema genera los recibos individuales formateados para impresión directa o PDF con campos de firma legal.
+        </p>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 12: CENTRO DE REPORTES Y EXCEL BOM                -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                </div>
+                <h2>Módulo 8: Centro de Reportes e Inteligencia</h2>
+            </div>
+            <div class="header-number">11</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Catálogo de Reportes Analíticos
+        </h3>
+        <p>
+            El sistema proporciona 5 reportes estratégicos con filtros dinámicos por fecha y accesos rápidos (<em>Este Mes</em>, <em>Mes Anterior</em>, <em>Últimos 30 Días</em>, <em>Año Actual</em>, <em>Todo</em>):
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Reporte</th>
+                    <th style="width: 35%;">Contenido Principal</th>
+                    <th style="width: 20%;">Columnas Clave</th>
+                    <th style="width: 20%;">Uso Contable</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>1. Plantilla de Personal</strong></td>
+                    <td>Directorio completo con datos fiscales (RFC, CURP, NSS), puestos y fechas de baja.</td>
+                    <td>14 columnas</td>
+                    <td>Auditoría y padrón IMSS</td>
+                </tr>
+                <tr>
+                    <td><strong>2. Asistencias y Retardos</strong></td>
+                    <td>Bitácora detallada de entradas, salidas, retardos y horas extras por día.</td>
+                    <td>12 columnas</td>
+                    <td>Supervisión operativa</td>
+                </tr>
+                <tr>
+                    <td><strong>3. Incidencias y Mermas</strong></td>
+                    <td>Registro de cargos por rotura, cuotas pactadas, amortizaciones y saldos.</td>
+                    <td>10 columnas</td>
+                    <td>Control de costos y mermas</td>
+                </tr>
+                <tr>
+                    <td><strong>4. Nóminas (Resumen)</strong></td>
+                    <td>Totales agregados de percepciones, deducciones y neto dispersado por periodo.</td>
+                    <td>9 columnas</td>
+                    <td>Dispersión bancaria y flujo</td>
+                </tr>
+                <tr>
+                    <td><strong>5. Desglose de Nómina</strong></td>
+                    <td>Matriz analítica individualizada con cada concepto devengado y retenido.</td>
+                    <td><strong>26 columnas</strong></td>
+                    <td>Contabilidad y finiquitos</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            Compatibilidad con Microsoft Excel (UTF-8 con BOM)
+        </h3>
+        <p>
+            Todos los reportes descargados incorporan la cabecera <strong>UTF-8 BOM (<code>\uFEFF</code>)</strong>. Esto garantiza que al abrir los archivos CSV en Microsoft Excel, las tildes y caracteres como la <strong>ñ</strong> se visualicen perfectamente sin caracteres deformados.
+        </p>
+
+        <div class="callout callout-accent">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <div>
+                <strong>Desglose Detallado de 26 Columnas:</strong> El reporte número 5 desglosa: Código, Nombre, Departamento, Puesto, RFC, CURP, NSS, Salario Diario, Días Trabajados, Sueldo Base, Horas Extra, Importe Horas Extra, Días Festivos, Importe Festivos, Bonos, Comisiones, Prima Vacacional, Aguinaldo, Total Percepciones, Cuota Incidencias, Retención IMSS, Retención ISR, Otras Deducciones, Total Deducciones, Neto a Pagar y Estatus de Pago.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 13: USUARIOS, CONFIGURACIÓN Y RESPALDOS           -->
+    <!-- ======================================================== -->
+    <div class="page-break">
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+                <h2>Módulo 9: Usuarios y Módulo 10: Configuración</h2>
+            </div>
+            <div class="header-number">12</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            Módulo 9: Gestión de Usuarios
+        </h3>
+        <p>
+            Permite dar de alta nuevas cuentas, modificar roles (<em>Administrador</em> o <em>Estándar</em>), activar o desactivar operadores y reiniciar contraseñas olvidadas.
+        </p>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Módulo 10: Respaldos y Mantenimiento de Datos
+        </h3>
+        <p>
+            Garantiza la continuidad operativa mediante tres mecanismos de administración de la base de datos:
+        </p>
+
+        <div class="three-cols" style="margin: 12px 0;">
+            <div class="step-card">
+                <h5>1. Generación de Respaldos</h5>
+                <p>Descarga un archivo <strong>SQL</strong> o <strong>JSON</strong> con el contenido íntegro de tablas, asistencias y nóminas.</p>
+            </div>
+            <div class="step-card">
+                <h5>2. Restauración Segura</h5>
+                <p>Permite subir un respaldo previo (hasta 20 MB) para recuperar el sistema en caso de contingencia.</p>
+            </div>
+            <div class="step-card">
+                <h5>3. Reinicio Controlado</h5>
+                <p>Función protegida que regenera las tablas de fábrica con la clave <code>BORRAR_TODO_TROPICO_56</code>.</p>
+            </div>
+        </div>
+
+        <div class="callout callout-gold">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <div>
+                <strong>Política de Respaldo Recomendada:</strong> Se aconseja generar y guardar una copia de respaldo en formato <strong>SQL</strong> cada semana después de cerrar nómina en un almacenamiento externo seguro.
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PÁGINA 14: RESOLUCIÓN DE PROBLEMAS Y GLOSARIO            -->
+    <!-- ======================================================== -->
+    <div>
+        <div class="header-section">
+            <div class="header-title-group">
+                <div class="section-icon-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </div>
+                <h2>Resolución de Problemas y Glosario</h2>
+            </div>
+            <div class="header-number">13</div>
+        </div>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            Guía de Solución de Problemas Comunes (Troubleshooting)
+        </h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 25%;">Situación Detectada</th>
+                    <th style="width: 35%;">Causa Probable</th>
+                    <th style="width: 40%;">Acción Correctiva</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>El navegador muestra una aplicación anterior (en puerto 3000)</strong></td>
+                    <td>Memoria caché persistente o Service Worker del navegador web.</td>
+                    <td>Presionar <code>Ctrl + F5</code> para recarga forzada, o abrir DevTools (<code>F12</code>) &gt; Vaciar caché y recargar forzado.</td>
+                </tr>
+                <tr>
+                    <td><strong>El Reloj Checador indica "PIN no reconocido"</strong></td>
+                    <td>El colaborador no tiene un PIN configurado o está en estado <em>Inactivo</em>.</td>
+                    <td>Ingresar a <em>Colaboradores</em>, verificar estatus <em>Activo</em> y asignar un nuevo PIN de 4 dígitos en su expediente.</td>
+                </tr>
+                <tr>
+                    <td><strong>No se conecta la base de datos al arrancar</strong></td>
+                    <td>El servicio local de MySQL no está iniciado o credenciales en <code>.env</code> no coinciden.</td>
+                    <td>Verificar que MySQL esté en ejecución en puerto 3306 e inspeccionar variables <code>DB_USER</code> y <code>DB_PASSWORD</code>.</td>
+                </tr>
+                <tr>
+                    <td><strong>Error de conexión al guardar nómina</strong></td>
+                    <td>La sesión activa de 24 horas ha expirado.</td>
+                    <td>Cerrar sesión desde el botón superior y volver a autenticarse con el usuario administrador.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Glosario Operativo de Términos
+        </h3>
+        <ul class="styled-list">
+            <li><strong>SGRH:</strong> Sistema de Gestión de Recursos Humanos.</li>
+            <li><strong>LFT:</strong> Ley Federal del Trabajo de los Estados Unidos Mexicanos.</li>
+            <li><strong>Vacaciones Dignas:</strong> Reforma laboral mexicana que establece un mínimo de 12 días laborables de vacaciones pagadas a partir del primer año de servicio.</li>
+            <li><strong>Prima Vacacional:</strong> Prestación legal consistente en al menos el 25% del salario diario correspondiente a los días de vacaciones disfrutados.</li>
+            <li><strong>Pre-Nómina:</strong> Estado provisional editable donde se consolidan percepciones, incidencias y deducciones antes del cierre definitivo de nómina.</li>
+            <li><strong>Amortización de Mermas:</strong> Recuperación programada en cuotas del costo de artículos o insumos siniestrados.</li>
+            <li><strong>UTF-8 con BOM:</strong> Estándar de codificación de texto que garantiza la lectura perfecta de tildes y eñes en Microsoft Excel sin requerir importación manual.</li>
+        </ul>
+
+        <div class="callout callout-primary" style="margin-top: 16px;">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <div>
+                <strong>Trópico 56 Restaurante:</strong> Manual de Usuario Oficial · Todos los derechos reservados · Desarrollado para la optimización y dignificación de la gestión del capital humano.
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

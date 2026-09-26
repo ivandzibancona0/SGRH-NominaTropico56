@@ -1,0 +1,351 @@
+/* ==========================================================
+   SISTEMA DE GESTIÓN DE RECURSOS HUMANOS - TRÓPICO 56
+   Module-Specific Styles & Rich UX Views
+   ========================================================== */
+
+/* -------------------------------------------------------------
+   PRE-NÓMINA MODAL & CÁLCULO MASIVO EDITABLE
+   ------------------------------------------------------------- */
+.prenomina-banner {
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.prenomina-totals {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.prenomina-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.prenomina-stat span {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-muted);
+}
+
+.prenomina-stat strong {
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.prenomina-stat.net strong {
+  color: var(--color-primary);
+  font-size: 1.35rem;
+}
+
+.prenomina-table-wrapper {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.prenomina-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.prenomina-table th {
+  background: var(--color-bg);
+  padding: 0.65rem 0.5rem;
+  border-bottom: 2px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 12;
+  font-size: 0.72rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.prenomina-table th.perceptions-header {
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.prenomina-table th.deductions-header {
+  background: #FFEBEE;
+  color: #C62828;
+}
+
+.prenomina-table td {
+  padding: 0.45rem 0.4rem;
+  border-bottom: 1px solid var(--color-border-light);
+  text-align: center;
+}
+
+.input-inline-num {
+  width: 80px;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  text-align: right;
+  background: #FFFFFF;
+  font-family: inherit;
+}
+
+.input-inline-num:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  background: var(--color-gold-light);
+}
+
+/* -------------------------------------------------------------
+   RECIBO DE PAGO DIGITAL / IMPRIMIBLE
+   ------------------------------------------------------------- */
+.receipt-container {
+  background: #FFFFFF;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  color: #2A2421;
+  font-size: 0.88rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--color-primary);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.receipt-logo-block {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.receipt-logo-block img {
+  width: 60px;
+  height: 60px;
+}
+
+.receipt-title {
+  text-align: right;
+}
+
+.receipt-title h2 {
+  font-size: 1.3rem;
+  color: var(--color-primary);
+}
+
+.receipt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  background: var(--color-bg);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+}
+
+.receipt-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.breakdown-box h4 {
+  font-size: 0.85rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0.5rem;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0;
+  font-size: 0.82rem;
+}
+
+.receipt-net-total {
+  background: var(--color-primary-light);
+  border: 1px solid var(--color-primary);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.receipt-signatures {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 3rem;
+  padding-top: 1rem;
+}
+
+.signature-line {
+  width: 200px;
+  border-top: 1px solid var(--color-dark);
+  text-align: center;
+  font-size: 0.78rem;
+  padding-top: 0.35rem;
+}
+
+/* -------------------------------------------------------------
+   TABULADOR LFT VACACIONES (MODAL & VISTA)
+   ------------------------------------------------------------- */
+.lft-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.lft-table th {
+  background: var(--color-bg-subtle);
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.lft-table td {
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.lft-input-days {
+  width: 70px;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+/* -------------------------------------------------------------
+   PASE DE LISTA DE ASISTENCIA DIARIA
+   ------------------------------------------------------------- */
+.attendance-status-selector {
+  display: inline-flex;
+  background: var(--color-bg);
+  padding: 2px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.status-opt {
+  padding: 0.25rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  transition: all var(--transition-fast);
+}
+
+.status-opt.active.present {
+  background: var(--color-success);
+  color: #FFF;
+}
+
+.status-opt.active.late {
+  background: var(--color-warning);
+  color: #FFF;
+}
+
+.status-opt.active.absence {
+  background: var(--color-danger);
+  color: #FFF;
+}
+
+/* -------------------------------------------------------------
+   CONFIGURACIÓN & BASE DE DATOS
+   ------------------------------------------------------------- */
+.backup-zone {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.backup-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  background: var(--color-card);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--color-bg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.dropzone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.danger-zone {
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  background: #FFF5F5;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.danger-zone h4 {
+  color: var(--color-danger);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Print Styles */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .receipt-container, .receipt-container * {
+    visibility: visible;
+  }
+  .receipt-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+}
