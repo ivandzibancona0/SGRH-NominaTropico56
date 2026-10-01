@@ -766,7 +766,7 @@
             </div>
             <div class="cover-meta-item">
                 <div class="meta-label">Versión de Sistema</div>
-                <div class="meta-val">v1.0.0 Relacional MySQL</div>
+                <div class="meta-val">v1.2.0 Relacional MySQL</div>
             </div>
             <div class="cover-meta-item">
                 <div class="meta-label">Destinatarios</div>
@@ -798,13 +798,19 @@
                 <tr>
                     <th style="width: 15%;">Versión</th>
                     <th style="width: 20%;">Fecha</th>
-                    <th style="width: 35%;">Descripción del Cambio</th>
-                    <th style="width: 30%;">Responsable</th>
+                    <th style="width: 38%;">Descripción del Cambio</th>
+                    <th style="width: 27%;">Responsable</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="badge badge-primary">v1.0.0</span></td>
+                    <td><span class="badge badge-primary">v1.2.0</span></td>
+                    <td>1 de Octubre, 2026</td>
+                    <td>Actualización integral: reloj checador digital con búsqueda y cierre seguro, automatización de retardos/salidas según horario de expediente, gestión y compensación de horas extras, bloqueo estricto de asistencias por nómina cerrada, cálculo de vacaciones con descanso excluido y recibos de nómina en media carta.</td>
+                    <td>Equipo de Desarrollo y Capital Humano</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-accent">v1.0.0</span></td>
                     <td>21 de Septiembre, 2026</td>
                     <td>Emisión inicial del manual operativo integral del SGRH Trópico 56.</td>
                     <td>Equipo de Desarrollo y Capital Humano</td>
@@ -1451,9 +1457,19 @@
                     <td>Cálculo de percepciones ordinarias, horas extra y prima vacacional.</td>
                 </tr>
                 <tr>
+                    <td><strong>Horario Oficial (Entrada / Salida)</strong></td>
+                    <td>Formato 24h (ej. <code>09:00 - 17:00</code>)</td>
+                    <td>Base para cálculo automático de retardos, salidas anticipadas y horas extras.</td>
+                </tr>
+                <tr>
+                    <td><strong>Día de Descanso Semanal</strong></td>
+                    <td>Día de la semana (por defecto <em>Domingo</em>)</td>
+                    <td>Excluido automáticamente en las solicitudes de vacaciones según la LFT.</td>
+                </tr>
+                <tr>
                     <td><strong>PIN de Checador</strong></td>
                     <td>Clave numérica secreta (4 dígitos)</td>
-                    <td>Autenticación rápida e infalsificable en el Reloj Checador modal.</td>
+                    <td>Autenticación y marcaje rápido e individual en el Reloj Checador modal.</td>
                 </tr>
                 <tr>
                     <td><strong>Estatus Laboral</strong></td>
@@ -1513,103 +1529,121 @@
         </div>
 
         <h3>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/></svg>
-            Reloj Checador Modal con Teclado Numérico
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Reloj Checador Digital en Vivo y Modo Kiosco
         </h3>
         <p>
-            Accesible en todo momento desde el botón <strong>Reloj Checador</strong> en la barra superior. Diseñado para tablets o terminales táctiles (POS).
+            Accesible desde la barra superior. Funciona como terminal táctil de marcaje en tiempo real con segundero continuo y cierre protegido para prevenir salidas no autorizadas.
         </p>
 
         <div class="two-cols">
             <div>
-                <h4>Flujo de Marcaje:</h4>
+                <h4>Flujo de Marcaje y Seguridad:</h4>
                 <ul class="styled-list">
-                    <li>El colaborador ingresa su <strong>PIN de 4 dígitos</strong> usando el teclado virtual o físico.</li>
-                    <li>El sistema reconoce automáticamente el nombre y determina si corresponde a <strong>Entrada</strong> o <strong>Salida</strong>.</li>
-                    <li>Se emite confirmación visual con la hora exacta y cómputo automático de retardo si aplica.</li>
+                    <li><strong>Buscador Reactivo:</strong> Localiza al colaborador al instante tecleando su nombre, apellido o código oficial (ej. <code>EMP-006</code>).</li>
+                    <li><strong>Horario Asignado:</strong> Al seleccionar al trabajador, el sistema muestra en pantalla su horario de expediente y determina si marca <em>Entrada</em> o <em>Salida</em>.</li>
+                    <li><strong>Cómputo Automático:</strong> Evalúa la puntualidad registrando <em>Retardo</em> o <em>Salida Anticipada</em> si difiere del horario oficial asignado.</li>
+                    <li><strong>Cierre Seguro Kiosco:</strong> El botón <em>Cerrar Reloj</em> exige validación con usuario y contraseña del supervisor para salir del modo de marcaje.</li>
                 </ul>
-
-                <div class="callout callout-primary" style="margin-top: 10px;">
-                    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <div>
-                        <strong>Tolerancia de Entrada:</strong> Margen parametrizable (por defecto 15 min). Superado dicho lapso, se cataloga automáticamente como <em>Retardo</em>.
-                    </div>
-                </div>
             </div>
 
-            <div class="visual-mockup" style="margin: 0; text-align: center;">
-                <div class="mockup-title" style="justify-content: center;">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    Interfaz del Reloj Checador
+            <div class="visual-mockup" style="margin: 0; padding: 10px; background: #FFFFFF;">
+                <div style="background: #1E1714; color: #FFF; border-radius: 8px; padding: 8px 10px; text-align: center; margin-bottom: 8px;">
+                    <div style="color: #D4A373; font-size: 6.5pt; font-weight: 700; letter-spacing: 0.8px;">TRÓPICO 56 · RELOJ CHECADOR</div>
+                    <div style="font-size: 15pt; font-weight: 800; color: #FFFFFF; font-family: monospace; letter-spacing: 1px; margin: 1px 0;">16:19:05 <span style="font-size: 7.5pt; color: #D4A373;">PM</span></div>
+                    <div style="font-size: 6.5pt; color: #A89F91;">Jueves, 1 de octubre de 2026</div>
                 </div>
-                <div class="keypad-display">••••</div>
-                <div class="keypad-grid">
-                    <div class="keypad-key">1</div>
-                    <div class="keypad-key">2</div>
-                    <div class="keypad-key">3</div>
-                    <div class="keypad-key">4</div>
-                    <div class="keypad-key">5</div>
-                    <div class="keypad-key">6</div>
-                    <div class="keypad-key">7</div>
-                    <div class="keypad-key">8</div>
-                    <div class="keypad-key">9</div>
-                    <div class="keypad-key action" style="background: #991B1B;">C</div>
-                    <div class="keypad-key">0</div>
-                    <div class="keypad-key action">OK</div>
+                <div style="font-size: 6.5pt; font-weight: 700; color: #666; margin-bottom: 2px;">BUSCAR COLABORADOR</div>
+                <div style="border: 1px solid #E5D5C5; border-radius: 4px; padding: 3px 6px; font-size: 6.5pt; color: #999; margin-bottom: 5px; background: #FAF7F2; display: flex; align-items: center; gap: 4px;">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <span>Buscar por nombre o código (ej. Lucía, EMP-006)...</span>
+                </div>
+                <div style="border: 1px solid var(--color-primary); border-radius: 4px; padding: 4px 6px; font-size: 6.5pt; font-weight: 600; color: #2A2421; margin-bottom: 6px; background: #FFF;">
+                    Lucía Pérez Torres (EMP-006 · Cajero General)
+                </div>
+                <div style="display: flex; gap: 5px;">
+                    <div style="flex: 1.3; background: #2E7D32; color: #FFF; text-align: center; padding: 4px; border-radius: 4px; font-size: 6.5pt; font-weight: 700;">
+                        ✓ Registrar Entrada
+                    </div>
+                    <div style="flex: 1; background: #FAF7F2; border: 1px solid #DDD; color: #666; text-align: center; padding: 4px; border-radius: 4px; font-size: 6.5pt; font-weight: 600;">
+                        🔒 Cerrar Reloj
+                    </div>
                 </div>
             </div>
         </div>
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Pase de Lista Masivo y Diario
+            Pase de Lista, Horas Extra y Bloqueo por Nómina Cerrada
         </h3>
+        <p>
+            El sistema admite registro diario individual o <strong>Pase de Lista Diario</strong> con la función <em>"Marcar Todos Presentes"</em> (rellena turnos con los horarios oficiales de cada empleado). En la edición de turnos, el administrador gestiona las horas extras con tres modalidades:
+        </p>
+
+        <div class="three-cols" style="margin: 6px 0 8px 0;">
+            <div class="step-card" style="padding: 6px 8px;">
+                <h5 style="font-size: 7.5pt; margin-bottom: 2px;">1. Aprobadas para Pago</h5>
+                <p style="font-size: 6.8pt; margin: 0;">Horas completas autorizadas post-salida; se liquidan en nómina con recargo del 200% legal.</p>
+            </div>
+            <div class="step-card" style="padding: 6px 8px;">
+                <h5 style="font-size: 7.5pt; margin-bottom: 2px;">2. Compensación de Retardo</h5>
+                <p style="font-size: 6.8pt; margin: 0;">El colaborador repone horas adeudadas por retardo o permiso; regulariza a <em>Presente</em> sin costo de nómina.</p>
+            </div>
+            <div class="step-card" style="padding: 6px 8px;">
+                <h5 style="font-size: 7.5pt; margin-bottom: 2px;">3. Festivo Laborado (LFT)</h5>
+                <p style="font-size: 6.8pt; margin: 0;">Checkbox de día inhábil; calcula pago extraordinario al doble conforme al Art. 75 de la LFT.</p>
+            </div>
+        </div>
 
         <table>
             <thead>
                 <tr>
-                    <th style="width: 25%;">Colaborador</th>
-                    <th style="width: 18%;">Entrada</th>
-                    <th style="width: 18%;">Salida</th>
-                    <th style="width: 15%;">Horas Extra</th>
-                    <th style="width: 24%;">Estatus / Incidencia</th>
+                    <th style="width: 14%;">Fecha</th>
+                    <th style="width: 24%;">Empleado</th>
+                    <th style="width: 20%;">Puesto y Área</th>
+                    <th style="width: 14%;">Horario</th>
+                    <th style="width: 12%;">Estatus</th>
+                    <th style="width: 16%;">Horas Extra</th>
+                    <th style="width: 15%; text-align: center;">Acción</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Carlos Mendoza</strong> (Cocina)</td>
-                    <td>08:02 AM</td>
-                    <td>04:15 PM</td>
-                    <td>0.0 hrs</td>
-                    <td><span class="badge badge-success">Asistencia Puntual</span></td>
+                    <td>2026-10-03<br><span class="badge badge-danger" style="font-size: 6pt; padding: 1px 4px;">🔒 CERRADA</span></td>
+                    <td><strong>Carlos Ramírez</strong><br><span style="font-size: 6.5pt; color: #888;">EMP-003</span></td>
+                    <td>Capitán de Meseros<br><span style="font-size: 6.5pt; color: #888;">Servicio y Salón</span></td>
+                    <td>09:00 - 17:00</td>
+                    <td><span class="badge badge-success">Presente</span></td>
+                    <td>1 hrs <span class="badge badge-success" style="font-size: 5.5pt;">Aprobado</span></td>
+                    <td style="text-align: center;"><span class="badge badge-dark" style="font-size: 6pt;">🔒 Ver / Bloqueado</span></td>
                 </tr>
                 <tr>
-                    <td><strong>Laura Gómez</strong> (Barra)</td>
-                    <td>04:22 PM</td>
-                    <td>--:--</td>
-                    <td>0.0 hrs</td>
-                    <td><span class="badge badge-warning">Retardo (7 min)</span></td>
+                    <td>2026-10-03<br><span class="badge badge-danger" style="font-size: 6pt; padding: 1px 4px;">🔒 CERRADA</span></td>
+                    <td><strong>Sofía Mendoza</strong><br><span style="font-size: 6.5pt; color: #888;">EMP-004</span></td>
+                    <td>Mesero / Host<br><span style="font-size: 6.5pt; color: #888;">Servicio y Salón</span></td>
+                    <td>09:00 - 17:00</td>
+                    <td><span class="badge badge-success">Presente</span></td>
+                    <td>-</td>
+                    <td style="text-align: center;"><span class="badge badge-dark" style="font-size: 6pt;">🔒 Ver / Bloqueado</span></td>
                 </tr>
                 <tr>
-                    <td><strong>Miguel Morales</strong> (Salón)</td>
-                    <td>--:--</td>
-                    <td>--:--</td>
-                    <td>0.0 hrs</td>
-                    <td><span class="badge badge-danger">Falta Injustificada</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Andrea Rivas</strong> (Cocina)</td>
-                    <td>08:00 AM</td>
-                    <td>06:30 PM</td>
-                    <td>2.5 hrs</td>
-                    <td><span class="badge badge-primary">Turno Extra</span></td>
+                    <td>2026-10-03<br><span class="badge badge-danger" style="font-size: 6pt; padding: 1px 4px;">🔒 CERRADA</span></td>
+                    <td><strong>Valeria Castillo</strong><br><span style="font-size: 6.5pt; color: #888;">EMP-002</span></td>
+                    <td>Bartender / Mixólogo<br><span style="font-size: 6.5pt; color: #888;">Barra y Coctelería</span></td>
+                    <td>--:-- - --:--</td>
+                    <td><span class="badge badge-gold">Vacaciones</span></td>
+                    <td>-</td>
+                    <td style="text-align: center;"><span class="badge badge-dark" style="font-size: 6pt;">🔒 Ver / Bloqueado</span></td>
                 </tr>
             </tbody>
         </table>
 
-        <p style="font-size: 8pt; color: var(--color-muted);">
-            <em>Nota sobre turnos pendientes:</em> Los turnos que aún no registran salida se indican con <code>--:--</code>, permitiendo registrar la salida manual antes del corte de nómina.
-        </p>
+        <div class="callout callout-dark" style="margin-top: 6px; padding: 6px 10px;">
+            <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <div style="font-size: 7.5pt;">
+                <strong>🔒 Integridad Contable:</strong> Al cerrar una nómina, las asistencias de esas fechas quedan bloqueadas irreversiblemente (insignia <em>🔒 CERRADA</em> y botón <em>🔒 Ver / Bloqueado</em>). No se permite alteración alguna en la interfaz ni a través de la API.
+            </div>
+        </div>
     </div>
 
     <!-- ======================================================== -->
@@ -1691,31 +1725,31 @@
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Ciclo de Solicitud y Aprobación de Vacaciones
+            Ciclo de Solicitud y Exclusión Automática de Descansos
         </h3>
 
         <div class="steps-container">
             <div class="step-card">
                 <div class="step-number-badge">1</div>
-                <h5>Registro de Solicitud</h5>
-                <p>Se selecciona el colaborador y el rango de fechas. El sistema valida el saldo disponible.</p>
+                <h5>Selección y Saldo LFT</h5>
+                <p>Al elegir al colaborador, el modal muestra su antigüedad, días ganados por LFT, días disfrutados y saldo pendiente en tiempo real.</p>
             </div>
             <div class="step-card">
                 <div class="step-number-badge">2</div>
-                <h5>Aprobación</h5>
-                <p>El administrador autoriza la solicitud. Los días se descuentan del saldo devengado.</p>
+                <h5>Exclusión de Descanso</h5>
+                <p>Al elegir fechas, el sistema descuenta automáticamente el día de descanso del expediente (ej. domingo) computando solo días hábiles de ley.</p>
             </div>
             <div class="step-card">
                 <div class="step-number-badge">3</div>
-                <h5>Prima Vacacional</h5>
-                <p>Al generar la nómina, se inyecta de forma automática el 25% de prima vacacional devengada.</p>
+                <h5>Prima y Carga en Nómina</h5>
+                <p>Se aplica la prima legal (mínimo 25%) y el sistema transfiere de forma automática los importes devengados a la Pre-Nómina del periodo.</p>
             </div>
         </div>
 
         <div class="callout callout-accent">
             <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
             <div>
-                <strong>Cálculo de Prima Vacacional:</strong> Fórmula legal: <code>(Días de Vacaciones) × (Salario Diario) × 0.25</code>. Se suma a las percepciones en la Pre-Nómina automáticamente.
+                <strong>Cálculo Legal de Prima Vacacional y Días Hábiles:</strong> Fórmula legal: <code>(Días Hábiles Solicitados) × (Salario Diario Base) × (% Prima / 100)</code>. El día de descanso semanal está remunerado en el salario ordinario, por lo que nunca se descuenta del saldo de vacaciones.
             </div>
         </div>
     </div>
@@ -1736,76 +1770,109 @@
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-            Control de Roturas, Daños y Faltantes
+            Control de Roturas, Daños y Faltantes de Caja
         </h3>
         <p>
-            Permite registrar mermas por rotura de loza, cristalería, extravío de utensilios o faltantes en corte de caja, acordando planes de recuperación en cuotas.
+            Permite registrar mermas operativas (rotura de loza, cristalería, descuadres de caja o extravío de equipo), acordando deducciones en nómina o liquidación anticipada en efectivo:
         </p>
+
+        <div class="three-cols" style="margin: 8px 0 10px 0;">
+            <div class="kpi-card" style="padding: 8px 10px;">
+                <div class="kpi-icon" style="background-color: var(--color-warning-bg); color: var(--color-warning); width: 28px; height: 28px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val" style="font-size: 11pt;">Saldo Pendiente</div>
+                    <div class="kpi-label">Incidencias activas por recuperar</div>
+                </div>
+            </div>
+            <div class="kpi-card" style="padding: 8px 10px;">
+                <div class="kpi-icon" style="background-color: var(--color-success-bg); color: var(--color-success); width: 28px; height: 28px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val" style="font-size: 11pt;">Total Recuperado</div>
+                    <div class="kpi-label">Descontado exitosamente en nómina</div>
+                </div>
+            </div>
+            <div class="kpi-card" style="padding: 8px 10px;">
+                <div class="kpi-icon" style="background-color: var(--color-primary-light); color: var(--color-primary); width: 28px; height: 28px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/></svg>
+                </div>
+                <div>
+                    <div class="kpi-val" style="font-size: 11pt;">Total Histórico</div>
+                    <div class="kpi-label">Acumulado global de mermas</div>
+                </div>
+            </div>
+        </div>
 
         <table>
             <thead>
                 <tr>
-                    <th style="width: 25%;">Concepto de Incidencia</th>
-                    <th style="width: 25%;">Área Frecuente</th>
-                    <th style="width: 25%;">Modalidad de Cobro</th>
-                    <th style="width: 25%;">Estatus Operativo</th>
+                    <th style="width: 12%;">Fecha</th>
+                    <th style="width: 22%;">Colaborador</th>
+                    <th style="width: 20%;">Tipo de Incidencia</th>
+                    <th style="width: 20%;">Descripción</th>
+                    <th style="width: 11%;">Monto Total</th>
+                    <th style="width: 13%;">Cuotas / Desc.</th>
+                    <th style="width: 11%;">Saldo Pend.</th>
+                    <th style="width: 11%;">Estatus</th>
+                    <th style="width: 12%; text-align: center;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Rotura de Cristalería</strong></td>
-                    <td>Barra / Salón</td>
-                    <td>Deducción en 1 exhibición</td>
-                    <td><span class="badge badge-warning">En Nómina</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Pérdida de Equipo de Cocina</strong></td>
-                    <td>Cocina Caliente</td>
-                    <td>Financiamiento en 4 cuotas</td>
-                    <td><span class="badge badge-primary">Cuotas Activas</span></td>
-                </tr>
-                <tr>
-                    <td><strong>Faltante en Corte de Caja</strong></td>
-                    <td>Caja Principal</td>
-                    <td>Deducción quincenal</td>
+                    <td>2026-10-05</td>
+                    <td><strong>Lucía Pérez</strong><br><span style="font-size: 6.5pt; color: #888;">EMP-006 · Cajero</span></td>
+                    <td><span class="badge badge-warning" style="font-size: 5.8pt;">Descuadre en Caja</span></td>
+                    <td style="font-size: 7.2pt;">Faltante en corte de arqueo</td>
+                    <td>$100.00</td>
+                    <td>1 cuota de $100</td>
+                    <td style="font-weight: 700; color: var(--color-danger);">$100.00</td>
                     <td><span class="badge badge-danger">Pendiente</span></td>
+                    <td style="text-align: center;"><span class="badge badge-primary" style="font-size: 6pt;">Liquidar</span></td>
                 </tr>
                 <tr>
-                    <td><strong>Rotura Accidental Justificada</strong></td>
-                    <td>Operación General</td>
-                    <td>Condonación administrativa</td>
-                    <td><span class="badge badge-success">Condonado</span></td>
+                    <td>2026-08-05</td>
+                    <td><strong>Sofía Mendoza</strong><br><span style="font-size: 6.5pt; color: #888;">EMP-004 · Mesero</span></td>
+                    <td><span class="badge badge-accent" style="font-size: 5.8pt;">Cristalería Rota</span></td>
+                    <td style="font-size: 7.2pt;">Rotura involuntaria de 6 copas</td>
+                    <td>$450.00</td>
+                    <td>2 cuotas de $225</td>
+                    <td style="font-weight: 700; color: var(--color-success);">$0.00</td>
+                    <td><span class="badge badge-success">Liquidado</span></td>
+                    <td style="text-align: center;"><span class="badge badge-dark" style="font-size: 6pt;">Saldado</span></td>
                 </tr>
             </tbody>
         </table>
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            Ciclo de Vida y Amortización en Nómina
+            Ciclo de Amortización y Liquidación Anticipada
         </h3>
 
         <div class="steps-container">
             <div class="step-card">
                 <div class="step-number-badge">1</div>
-                <h5>Registro de Cargo</h5>
-                <p>Se describe el artículo, monto total, colaborador responsable y número pactado de cuotas.</p>
+                <h5>Registro de Incidencia</h5>
+                <p>Se detalla el concepto, monto total, responsable y número pactado de cuotas de descuento.</p>
             </div>
             <div class="step-card">
                 <div class="step-number-badge">2</div>
-                <h5>Retención Automática</h5>
-                <p>Al procesar nómina, se descuenta la cuota de las percepciones líquidas del trabajador.</p>
+                <h5>Descuento en Nómina</h5>
+                <p>En cada periodo de nómina se retiene la cuota correspondiente reduciendo el saldo automáticamente.</p>
             </div>
             <div class="step-card">
                 <div class="step-number-badge">3</div>
-                <h5>Finiquito de Deuda</h5>
-                <p>Cubierto el importe, el estado cambia a <em>Liquidado</em> sin más deducciones.</p>
+                <h5>Botón Liquidar</h5>
+                <p>Si el colaborador abona en efectivo en caja, el botón <em>Liquidar</em> salda la deuda al instante.</p>
             </div>
         </div>
 
         <div class="callout callout-gold">
             <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>
-                <strong>Límites Legales de Retención:</strong> Conforme al artículo 110 de la LFT, las deducciones aseguran que el trabajador perciba un monto superior al salario mínimo vigente.
+                <strong>Límites Legales de Retención (LFT Art. 110):</strong> Los convenios de pago y descuentos aplicados nunca vulneran el salario mínimo legal garantizado del colaborador.
             </div>
         </div>
     </div>
@@ -1826,38 +1893,37 @@
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Pre-Nómina Interactiva en Vivo
+            Pre-Nómina Dinámica y Cierre de Periodos
         </h3>
         <p>
-            La Pre-Nómina permite ajustar conceptos extraordinarios antes del cierre y timbrado interno del periodo:
+            Mediante el botón <strong>+ Calcular Pre-Nómina</strong>, el sistema consolida automáticamente asistencias, horas extras autorizadas, festivos laborados y cuotas de mermas:
         </p>
 
         <div class="two-cols">
             <div>
                 <h4>Percepciones Computables:</h4>
                 <ul class="styled-list">
-                    <li><strong>Sueldo Base:</strong> <code>Días Trabajados × Salario Diario</code>.</li>
-                    <li><strong>Horas Extra:</strong> Importe proporcional devengado.</li>
-                    <li><strong>Festivos Laborados:</strong> Pago al doble según LFT.</li>
-                    <li><strong>Bonos y Comisiones:</strong> Productividad o ventas.</li>
-                    <li><strong>Prima Vacacional:</strong> 25%+ sobre días disfrutados.</li>
+                    <li><strong>Sueldo Base:</strong> <code>Días Trabajados × Salario Diario Base</code>.</li>
+                    <li><strong>Horas Extra:</strong> Horas completas autorizadas (pago al 200%).</li>
+                    <li><strong>Festivos Laborados:</strong> Remuneración doble según Art. 75 LFT.</li>
+                    <li><strong>Prima Vacacional:</strong> 25%+ sobre días disfrutados en el ciclo.</li>
+                    <li><strong>Bonos y Premios:</strong> Asistencia, puntualidad o comisiones.</li>
                 </ul>
 
                 <h4>Deducciones Aplicables:</h4>
                 <ul class="styled-list">
-                    <li><strong>Cuota de Mermas:</strong> Descuento de incidencias pactadas.</li>
-                    <li><strong>Retención IMSS:</strong> Aportación de seguridad social.</li>
-                    <li><strong>Retención ISR:</strong> Impuesto sobre la renta según tabulador.</li>
-                    <li><strong>Otras Deducciones:</strong> Anticipos o préstamos internos.</li>
+                    <li><strong>Cuota de Mermas:</strong> Parcialidad de cargos por rotura o faltantes.</li>
+                    <li><strong>Seguridad Social:</strong> Aportación del trabajador al IMSS.</li>
+                    <li><strong>Impuesto (ISR):</strong> Retención gravable conforme a tabuladores.</li>
                 </ul>
             </div>
 
             <div class="receipt-card">
                 <div class="receipt-header">
                     <h6>TRÓPICO 56 RESTAURANTE</h6>
-                    <div style="font-size: 6.5pt; color: var(--color-muted);">RECIBO OFICIAL DE NÓMINA · PERIODO SEMANAL</div>
+                    <div style="font-size: 6.5pt; color: var(--color-muted);">RECIBO OFICIAL DE NÓMINA · FORMATO MEDIA CARTA</div>
                 </div>
-                <div style="margin-bottom: 5px;">
+                <div style="margin-bottom: 4px; font-size: 7.2pt;">
                     <div><strong>Colaborador:</strong> Carlos Mendoza (Cocina)</div>
                     <div><strong>RFC:</strong> MEGC900101XYZ · <strong>NSS:</strong> 12345678901</div>
                 </div>
@@ -1867,32 +1933,28 @@
                     <span>$3,150.00</span>
                 </div>
                 <div class="receipt-row">
-                    <span>Horas Extras (3 hrs)</span>
-                    <span>$236.25</span>
+                    <span>Horas Extras Aprobadas (2 hrs)</span>
+                    <span>$187.50</span>
                 </div>
                 <div class="receipt-row">
-                    <span>Bono de Puntualidad</span>
-                    <span>$300.00</span>
+                    <span>Bono de Productividad</span>
+                    <span>$250.00</span>
                 </div>
                 <div class="receipt-row" style="color: var(--color-danger);">
                     <span>(-) Cuota Merma Cristalería</span>
-                    <span>-$150.00</span>
+                    <span>-$100.00</span>
                 </div>
                 <div class="receipt-row" style="color: var(--color-danger);">
-                    <span>(-) Retención IMSS</span>
-                    <span>-$84.50</span>
-                </div>
-                <div class="receipt-row" style="color: var(--color-danger);">
-                    <span>(-) Retención ISR</span>
-                    <span>-$120.00</span>
+                    <span>(-) Retención IMSS / ISR</span>
+                    <span>-$165.20</span>
                 </div>
 
                 <div class="receipt-total">
                     <span>TOTAL NETO A PAGAR:</span>
-                    <span>$3,331.75 MXN</span>
+                    <span>$3,322.30 MXN</span>
                 </div>
 
-                <div class="signature-box">
+                <div class="signature-box" style="margin-top: 6px; padding: 4px;">
                     Firma de Conformidad del Colaborador
                 </div>
             </div>
@@ -1900,11 +1962,22 @@
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-            Impresión y Cierre Formal de Recibos
+            Historial de Periodos, Recibos Media Carta y Bloqueo
         </h3>
         <p>
-            Al pulsar <strong>Guardar y Cerrar Nómina</strong>, el sistema genera los recibos individuales formateados para impresión directa o PDF con campos de firma legal.
+            Al pulsar <strong>Guardar y Cerrar Nómina</strong>, el periodo pasa al <em>Historial de Periodos Procesados</em> con estatus <span class="badge badge-success">● CERRADA</span> y se detonan dos procesos clave:
         </p>
+
+        <div class="two-cols" style="margin-top: 6px;">
+            <div class="step-card" style="margin: 0; padding: 8px 10px;">
+                <h5 style="margin-bottom: 2px;">1. Recibos Media Carta (Statement)</h5>
+                <p style="font-size: 7.2pt; margin: 0;">Emisión de recibos en formato estándar <strong>5.5" × 8.5"</strong> (dos por hoja carta), listos para firma y entrega al personal.</p>
+            </div>
+            <div class="step-card" style="margin: 0; padding: 8px 10px;">
+                <h5 style="margin-bottom: 2px;">2. Bloqueo Inmutable de Asistencias</h5>
+                <p style="font-size: 7.2pt; margin: 0;">Se congela el pase de lista y edición individual de las fechas cerradas (botón <em>🔒 Ver / Bloqueado</em>) protegiendo el cuadre contable.</p>
+            </div>
+        </div>
     </div>
 
     <!-- ======================================================== -->
@@ -2070,24 +2143,29 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>El navegador muestra una aplicación anterior (en puerto 3000)</strong></td>
-                    <td>Memoria caché persistente o Service Worker del navegador web.</td>
-                    <td>Presionar <code>Ctrl + F5</code> para recarga forzada, o abrir DevTools (<code>F12</code>) &gt; Vaciar caché y recargar forzado.</td>
+                    <td><strong>La asistencia muestra botón "🔒 Ver / Bloqueado"</strong></td>
+                    <td>La fecha del registro pertenece a un periodo de nómina con estatus <em>CERRADA</em>.</td>
+                    <td>Mecanismo de seguridad contable activo. Los registros de periodos cerrados son inmutables para garantizar auditorías fiscales.</td>
                 </tr>
                 <tr>
-                    <td><strong>El Reloj Checador indica "PIN no reconocido"</strong></td>
-                    <td>El colaborador no tiene un PIN configurado o está en estado <em>Inactivo</em>.</td>
-                    <td>Ingresar a <em>Colaboradores</em>, verificar estatus <em>Activo</em> y asignar un nuevo PIN de 4 dígitos en su expediente.</td>
+                    <td><strong>Al hacer clic en "Cerrar Reloj" solicita usuario y contraseña</strong></td>
+                    <td>Medida de protección activa en modo terminal o kiosco táctil.</td>
+                    <td>Ingrese credenciales de un usuario administrador u operador autorizado para salir de la pantalla de marcaje.</td>
                 </tr>
                 <tr>
-                    <td><strong>No se conecta la base de datos al arrancar</strong></td>
-                    <td>El servicio local de MySQL no está iniciado o credenciales en <code>.env</code> no coinciden.</td>
-                    <td>Verificar que MySQL esté en ejecución en puerto 3306 e inspeccionar variables <code>DB_USER</code> y <code>DB_PASSWORD</code>.</td>
+                    <td><strong>La solicitud de vacaciones descuenta menos días de los calendáricos</strong></td>
+                    <td>El sistema excluye automáticamente el día de descanso semanal registrado en el expediente (ej. domingo).</td>
+                    <td>Comportamiento legal estricto. La LFT estipula que las vacaciones se computan únicamente sobre días laborables.</td>
                 </tr>
                 <tr>
-                    <td><strong>Error de conexión al guardar nómina</strong></td>
-                    <td>La sesión activa de 24 horas ha expirado.</td>
-                    <td>Cerrar sesión desde el botón superior y volver a autenticarse con el usuario administrador.</td>
+                    <td><strong>No se reflejan horas extras en el cálculo de la nómina</strong></td>
+                    <td>Las horas extras están en modalidad <em>"Compensación de Retardo"</em> o <em>"Rechazadas"</em>.</td>
+                    <td>Para generar pago al 200%, edite la asistencia y seleccione <em>"Aprobadas para Pago en Nómina"</em>.</td>
+                </tr>
+                <tr>
+                    <td><strong>El navegador muestra una versión anterior en pantalla</strong></td>
+                    <td>Memoria caché persistente del navegador web.</td>
+                    <td>Presionar <code>Ctrl + F5</code> para recargar forzadamente el sistema y descargar los archivos actualizados.</td>
                 </tr>
             </tbody>
         </table>
@@ -2097,16 +2175,16 @@
             Glosario Operativo de Términos
         </h3>
         <ul class="styled-list">
-            <li><strong>SGRH:</strong> Sistema de Gestión de Recursos Humanos.</li>
-            <li><strong>LFT:</strong> Ley Federal del Trabajo de los Estados Unidos Mexicanos.</li>
-            <li><strong>Vacaciones Dignas:</strong> Reforma laboral mexicana que establece un mínimo de 12 días laborables de vacaciones pagadas a partir del primer año de servicio.</li>
-            <li><strong>Prima Vacacional:</strong> Prestación legal consistente en al menos el 25% del salario diario correspondiente a los días de vacaciones disfrutados.</li>
-            <li><strong>Pre-Nómina:</strong> Estado provisional editable donde se consolidan percepciones, incidencias y deducciones antes del cierre definitivo de nómina.</li>
-            <li><strong>Amortización de Mermas:</strong> Recuperación programada en cuotas del costo de artículos o insumos siniestrados.</li>
-            <li><strong>UTF-8 con BOM:</strong> Estándar de codificación de texto que garantiza la lectura perfecta de tildes y eñes en Microsoft Excel sin requerir importación manual.</li>
+            <li><strong>SGRH:</strong> Sistema de Gestión de Recursos Humanos de Trópico 56 Restaurante.</li>
+            <li><strong>LFT / Vacaciones Dignas:</strong> Legislación laboral mexicana que garantiza un mínimo de 12 días laborables con prima del 25%+.</li>
+            <li><strong>Bloqueo de Nómina Cerrada:</strong> Candado de integridad que congela asistencias de un ciclo cerrado para impedir alteraciones.</li>
+            <li><strong>Compensación de Horas Extra:</strong> Modalidad para saldar retardos o permisos con tiempo post-salida sin costo adicional en nómina.</li>
+            <li><strong>Kiosco de Reloj Checador:</strong> Interfaz de marcaje continuo en tiempo real con salida restringida por credenciales de supervisor.</li>
+            <li><strong>Recibo Media Carta:</strong> Formato estandarizado de recibo de nómina (5.5" × 8.5") con firmas de conformidad y desglose de ley.</li>
+            <li><strong>UTF-8 con BOM:</strong> Estándar de codificación de texto que garantiza la lectura perfecta de tildes y eñes en Microsoft Excel.</li>
         </ul>
 
-        <div class="callout callout-primary" style="margin-top: 16px;">
+        <div class="callout callout-primary" style="margin-top: 10px;">
             <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             <div>
                 <strong>Trópico 56 Restaurante:</strong> Manual de Usuario Oficial · Todos los derechos reservados · Desarrollado para la optimización y dignificación de la gestión del capital humano.

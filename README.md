@@ -32,12 +32,14 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 
 - **Cero Frameworks Pesados en Frontend:** Aplicación de Página Única (**SPA**) ultrarrápida y liviana construida con **Vanilla JavaScript (ES6+)** y **Vanilla CSS**, con diseño adaptativo móvil/escritorio (Barra inferior móvil, Menú lateral desplegable y navegación fluida).
 - **Base de Datos Relacional Exclusiva en MySQL:** Conexión robusta por pool a servidor **MySQL / MariaDB** mediante `mysql2/promise` con auto-inicialización de esquema DDL relacional y datos base al primer arranque.
-- **Reloj Checador Rápido con Teclado Numérico:** Modal flotante global accesible en cualquier vista con teclado numérico virtual para registro de entrada y salida mediante PIN o código de empleado.
-- **Pase de Lista Masivo y Diario:** Matriz de asistencias con visualización limpia de turnos sin marcar (`--:--`), cómputo automático de retardos, salidas anticipadas, horas extras y días festivos laborados al doble.
-- **Pre-Nómina Interactiva en Vivo:** Hoja de cálculo integrada donde el administrador puede ajustar días laborados, horas extra, bonos, comisiones, amortización de mermas e ingresar retenciones (IMSS e ISR con recálculo dinámico).
+- **Reloj Checador Digital Seguro con PIN y Búsqueda:** Modal interactivo con teclado numérico virtual, barra de búsqueda predictiva en tiempo real y **cierre blindado por credenciales de usuario** para evitar manipulaciones operativas.
+- **Detección Automática de Retardos y Salidas Anticipadas:** Validación en tiempo real de checadas contra los horarios oficiales registrados en el expediente digital de cada colaborador (`entry_time`, `exit_time`).
+- **Pase de Lista Masivo con Horarios de Expediente:** Función "Marcar Todos Presentes" que autocompleta turnos oficiales individuales, cálculo de horas extras completas en estatus pendiente y compensación administrativa de retardos.
+- **🔒 Integridad de Datos por Nómina Cerrada:** Bloqueo estricto e irrevocable de asistencias en backend (`403 Forbidden`) y frontend para días involucrados en nóminas cerradas.
+- **Pre-Nómina Interactiva en Vivo:** Hoja de cálculo integrada donde el administrador puede ajustar días laborados, horas extra autorizadas, bonos, comisiones, amortización de mermas e ingresar retenciones (IMSS e ISR con recálculo dinámico).
 - **Nóminas Masivas e Individuales:** Procesamiento de plantilla completa o generación de nóminas individuales para finiquitos, jornales eventuales o pagos extraordinarios.
-- **Recibos de Nómina con Formato Oficial:** Generación e impresión de recibos desglosados listos para firma de conformidad del colaborador.
-- **Cálculo de Vacaciones según LFT (Vacaciones Dignas):** Reglas integradas de la Ley Federal del Trabajo de México con cálculo automático de días devengados por antigüedad y control de prima vacacional (25%+).
+- **Recibos de Nómina en Formato Media Carta:** Generación e impresión de recibos desglosados en formato Media Carta (Statement / 5.5 × 8.5 in) listos para firma de conformidad del colaborador sin desbordes.
+- **Cálculo de Vacaciones según LFT (Vacaciones Dignas):** Reglas integradas de la Ley Federal del Trabajo de México con cálculo automático de días devengados por antigüedad, exclusión de domingos por defecto y control de prima vacacional (25%+).
 - **Centro de Reportes y Exportación CSV:** Compatible al 100% con Microsoft Excel mediante codificación **UTF-8 con BOM (`\uFEFF`)**, evitando deformación de tildes y caracteres como la `ñ`.
 - **Rendimiento con Infinity Scroll:** Tablas de alto desempeño con paginación reactiva basada en `IntersectionObserver`.
 - **Lanzador de un Clic para Windows:** Archivo `SGRH - Trópico 56.bat` para iniciar el servidor y abrir el navegador de forma desatendida.
@@ -71,17 +73,36 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 - Catálogo de puestos con salario diario base sugerido y vinculación departamental.
 
 ### 3. 👥 Colaboradores (Plantilla de Empleados)
-- Expediente digital completo: código único, nombres, RFC, CURP, NSS, fecha de ingreso, salario diario, turno y tipo de contrato.
+- Expediente digital completo: código único, nombres, RFC, CURP, NSS, fecha de ingreso, salario diario, turno, tipo de contrato.
+- **Horarios Oficiales y Días de Descanso:** Asignación individual de hora de entrada (`entry_time`), hora de salida (`exit_time`) y día de descanso semanal (`rest_day`).
 - Filtrado dinámico por departamento y estatus (*Activo*, *Inactivo*, *Vacaciones*, *Permiso*).
 - Gestión de bajas ágil: registro directo mediante botón rápido (`🗑️`) o formulario de edición, guardando la fecha exacta de inactividad.
 
 ### 4. 📅 Control de Asistencias y Reloj Checador
-- **Reloj Checador Modal:** Teclado numérico táctil interactivo para registro de entrada y salida con PIN de colaborador.
-- **Pase de Lista Diario:** Interfaz matricial para registrar asistencias masivas en una sola pantalla, con detección de retardos, salidas anticipadas y cálculo de horas extras.
-- **Historial de Registros:** Visualización filtrable por fecha con Infinity Scroll y edición manual para administradores.
+- **Reloj Checador Digital Seguro:**
+  - Modal flotante con teclado numérico virtual o selección directa de colaborador.
+  - Barra de búsqueda predictiva en tiempo real por nombre, apellido o código de empleado.
+  - **Cierre Protegido por Credenciales:** Al intentar cerrar la ventana del checador se solicita autenticación obligatoria; si las credenciales no son válidas, la ventana permanece abierta para evitar manipulaciones en turnos.
+- **Automatización de Retardos y Salidas Anticipadas:**
+  - Detección automática al checar entrada o salida comparando los tiempos registrados contra el horario oficial del expediente del colaborador.
+  - Si la entrada supera la hora programada se clasifica automáticamente como **Retardo**.
+  - Si la salida es anterior a la hora oficial se marca automáticamente como **Salida Anticipada**.
+- **Gestión y Compensación de Horas Extra:**
+  - Contabilización automática de horas completas trabajadas después del horario de salida, registradas inicialmente en estatus `Pendiente`.
+  - Panel administrativo de autorización con opciones:
+    - *Aprobadas para Pago en Nómina:* Se remuneran al doble conforme a la LFT.
+    - *Compensación de Retardo / Permiso:* Aplica el tiempo adicional para justificar retardos o permisos, cambiando el estatus de la jornada a `Presente` sin generar sobrecosto monetario en nómina.
+    - *Rechazadas / No Autorizadas:* Descartadas del cálculo de pago.
+- **Pase de Lista Diario y Registro Masivo:**
+  - Función **"Marcar Todos Presentes"** que autocompleta las columnas de entrada y salida con los horarios individuales configurados en el expediente de cada trabajador.
+- **🔒 Bloqueo Estricto de Asistencias por Nómina Cerrada:**
+  - Una vez cerrada una nómina (`status = 'closed'`), se bloquea irrevocablemente la edición de asistencias para todos los días pertenecientes a dicho periodo.
+  - **Nivel API:** Rechazo con código HTTP `403 Forbidden` en endpoints de inserción, actualización, pase masivo y compensación de horas extra.
+  - **Nivel UI:** Distintivo visual `🔒 Cerrada`, modales en modo solo lectura con banner explicativo y controles deshabilitados para evitar alteraciones en periodos liquidados.
 
 ### 5. ☀️ Vacaciones (Ley Federal del Trabajo)
 - Motor de cálculo de antigüedad automática basado en la tabla LFT (*Vacaciones Dignas*).
+- Cómputo de días hábiles excluyendo domingos de descanso por defecto para periodos continuos.
 - Control del saldo disponible vs. días solicitados y tomados.
 - Solicitud, aprobación/rechazo y cómputo de la prima vacacional (mínimo 25%).
 
@@ -94,9 +115,9 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 ### 7. 💵 Gestión y Cálculo de Nóminas
 - Períodos flexibles: Semanal, Catorcenal, Quincenal, Diario/Jornada, Mensual o Personalizado.
 - Modalidades: Nómina Masiva (toda la plantilla activa) o Nómina Individual (finiquito, jornada única).
-- Pre-Nómina editable en vivo: desglose dinámico de percepciones (sueldo base, horas extra, festivos laborados al doble, bonos, comisiones, prima vacacional, aguinaldo) y deducciones (cuota de incidencias, retención IMSS, retención ISR y otras deducciones).
-- Cierre y timbrado interno: amortización automática de incidencias asociadas.
-- Emisión e impresión de **Recibos de Nómina** con firmas de conformidad y formato listo para imprimir.
+- Pre-Nómina editable en vivo: desglose dinámico de percepciones (sueldo base, horas extra autorizadas, festivos laborados al doble, bonos, comisiones, prima vacacional, aguinaldo) y deducciones (cuota de incidencias, retención IMSS, retención ISR y otras deducciones).
+- Cierre y timbrado interno: amortización automática de incidencias asociadas y **bloqueo automático de asistencias**.
+- **Recibos de Nómina en Formato Media Carta:** Impresión y vista previa adaptadas a formato Media Carta (Statement / 5.5 × 8.5 pulgadas), optimizados para una sola hoja física con firmas de conformidad.
 
 ### 8. 📑 Centro de Reportes y Exportación CSV
 Generación de reportes tabulares con filtros de fechas, atajos rápidos (`[Este Mes]`, `[Mes Anterior]`, `[Últimos 30 Días]`, `[Año Actual]`, `[Todo]`) y exportación inmediata a Excel (UTF-8 BOM):
@@ -242,7 +263,7 @@ SGRH - Trópico 56.bat
 
 ## ⚙️ Variables de Entorno
 
-El archivo `.env` permite configurar la conectividad del servidor y la persistencia de datos:
+El archivo `.env` permite configurar la conectividad del servidor y la persistencia de datos. Se incluye una plantilla oficial [`.env.example`](file:///c:/Users/ivand/Downloads/SGRH-NominaTropico56/.env.example) lista para duplicar:
 
 | Variable | Tipo | Valor por Defecto | Descripción |
 | :--- | :--- | :--- | :--- |
@@ -252,12 +273,12 @@ El archivo `.env` permite configurar la conectividad del servidor y la persisten
 | `DB_PORT` | Numérico | `3306` | Puerto de conexión del servidor MySQL |
 | `DB_USER` | Texto | `root` | Usuario de conexión a MySQL |
 | `DB_PASSWORD` | Texto | *(vacío)* | Contraseña del usuario MySQL |
-| `DB_NAME` | Texto | `tropico56_sgrh` | Nombre de la base de datos (se auto-crea al iniciar) |
+| `DB_NAME` | Texto | `tropico_sgrh` | Nombre de la base de datos (se auto-crea al iniciar) |
 | `JWT_SECRET` | Texto | `tropico56_sgrh_secret_...` | Clave secreta para la firma criptográfica de tokens |
 | `JWT_EXPIRES_IN`| Texto | `24h` | Tiempo de vida de la sesión activa |
 
 > [!NOTE]
-> **Auto-Creación de Esquema:** El sistema crea automáticamente la base de datos `tropico56_sgrh` (o la definida en `DB_NAME`) junto con todas las tablas DDL, índices y datos iniciales requeridos en el primer arranque si aún no existen en el servidor MySQL.
+> **Auto-Creación de Esquema:** El sistema crea automáticamente la base de datos `tropico_sgrh` (o la definida en `DB_NAME`) junto con todas las tablas DDL, índices y datos iniciales requeridos en el primer arranque si aún no existen en el servidor MySQL.
 
 ---
 
