@@ -46,7 +46,7 @@ router.get('/', verifyToken, async (req, res) => {
                 e.id, e.code, e.first_name, e.last_name, e.rfc, e.curp, e.nss,
                 e.email, e.phone, e.address, e.birth_date, e.hire_date,
                 e.department_id, e.position_id, e.contract_type, e.daily_salary,
-                e.shift, e.status, e.avatar, e.created_at,
+                e.shift, e.entry_time, e.exit_time, e.rest_day, e.status, e.avatar, e.created_at,
                 d.name as department_name,
                 p.name as position_name
             FROM employees e
@@ -169,7 +169,7 @@ router.post('/', verifyToken, async (req, res) => {
         const {
             code, first_name, last_name, rfc, curp, nss, email, phone,
             address, birth_date, hire_date, department_id, position_id,
-            contract_type, daily_salary, shift, status
+            contract_type, daily_salary, shift, entry_time, exit_time, rest_day, status
         } = req.body;
 
         if (!first_name || !last_name || !rfc || !hire_date || !department_id || !position_id) {
@@ -199,15 +199,17 @@ router.post('/', verifyToken, async (req, res) => {
             INSERT INTO employees (
                 code, first_name, last_name, rfc, curp, nss, email, phone,
                 address, birth_date, hire_date, department_id, position_id,
-                contract_type, daily_salary, shift, status
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                contract_type, daily_salary, shift, entry_time, exit_time, rest_day, status
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             empCode, first_name.trim(), last_name.trim(), rfc.trim().toUpperCase(),
             curp ? curp.trim().toUpperCase() : null, nss ? nss.trim() : null,
             email ? email.trim().toLowerCase() : null, phone ? phone.trim() : null,
             address ? address.trim() : null, birth_date || null, hire_date,
             department_id, position_id, contract_type || 'Indeterminado',
-            salary, shift || 'Matutino', status || 'active'
+            salary, shift || 'Matutino',
+            entry_time || '09:00:00', exit_time || '17:00:00', rest_day || 'Domingo',
+            status || 'active'
         ]);
 
         res.status(201).json({
@@ -229,7 +231,7 @@ router.put('/:id', verifyToken, async (req, res) => {
         const {
             code, first_name, last_name, rfc, curp, nss, email, phone,
             address, birth_date, hire_date, department_id, position_id,
-            contract_type, daily_salary, shift, status
+            contract_type, daily_salary, shift, entry_time, exit_time, rest_day, status
         } = req.body;
 
         if (!first_name || !last_name || !rfc || !hire_date || !department_id || !position_id) {
@@ -254,7 +256,7 @@ router.put('/:id', verifyToken, async (req, res) => {
                 code = ?, first_name = ?, last_name = ?, rfc = ?, curp = ?, nss = ?,
                 email = ?, phone = ?, address = ?, birth_date = ?, hire_date = ?,
                 department_id = ?, position_id = ?, contract_type = ?, daily_salary = ?,
-                shift = ?, status = ?
+                shift = ?, entry_time = ?, exit_time = ?, rest_day = ?, status = ?
             WHERE id = ?
         `, [
             code, first_name.trim(), last_name.trim(), rfc.trim().toUpperCase(),
@@ -262,7 +264,9 @@ router.put('/:id', verifyToken, async (req, res) => {
             email ? email.trim().toLowerCase() : null, phone ? phone.trim() : null,
             address ? address.trim() : null, birth_date || null, hire_date,
             department_id, position_id, contract_type || 'Indeterminado',
-            salary, shift || 'Matutino', status || 'active', id
+            salary, shift || 'Matutino',
+            entry_time || '09:00:00', exit_time || '17:00:00', rest_day || 'Domingo',
+            status || 'active', id
         ]);
 
         res.json({ success: true, message: 'Empleado actualizado correctamente.' });

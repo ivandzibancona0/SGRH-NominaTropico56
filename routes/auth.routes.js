@@ -119,4 +119,56 @@ router.post('/change-password', verifyToken, async (req, res) => {
     }
 });
 
+// POST /api/auth/verify-credentials - verify user credentials before closing punch clock
+router.post('/verify-credentials', verifyToken, async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se ha podido cerrar el reloj checador por credenciales incorrectas.'
+            });
+        }
+
+        const users = await query('SELECT * FROM users WHERE id = ?', [req.user.id]);
+        if (users.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Usuario no encontrado.'
+            });
+        }
+
+        const user = users[0];
+        const trimmedUser = username.trim().toLowerCase();
+
+        // Must match active user profile username or email
+        if (user.username.toLowerCase() !== trimmedUser && user.email.toLowerCase() !== trimmedUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se ha podido cerrar el reloj checador por credenciales incorrectas.'
+            });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: 'No se ha podido cerrar el reloj checador por credenciales incorrectas.'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Credenciales validadas exitosamente.'
+        });
+    } catch (error) {
+        console.error('Error al verificar credenciales:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al verificar credenciales.'
+        });
+    }
+});
+
 module.exports = router;
+

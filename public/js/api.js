@@ -41,7 +41,7 @@ const API = {
         try {
             const res = await fetch(url, config);
             
-            if (res.status === 401) {
+            if (res.status === 401 && !endpoint.startsWith('/auth/')) {
                 // Unauthorized / Token expired
                 this.setToken(null);
                 localStorage.removeItem('tropico56_user');

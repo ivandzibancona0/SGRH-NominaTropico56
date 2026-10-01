@@ -211,6 +211,8 @@ const EmployeesModule = {
                         <div><strong>Fecha Ingreso:</strong> ${emp.hire_date}</div>
                         <div><strong>Salario Diario:</strong> $${parseFloat(emp.daily_salary).toFixed(2)} MXN</div>
                         <div><strong>Turno:</strong> ${emp.shift}</div>
+                        <div><strong>Horario Asignado:</strong> ${emp.entry_time ? emp.entry_time.slice(0, 5) : '09:00'} a ${emp.exit_time ? emp.exit_time.slice(0, 5) : '17:00'}</div>
+                        <div><strong>Día de Descanso:</strong> ${emp.rest_day || 'Domingo'}</div>
                         <div><strong>Teléfono:</strong> ${emp.phone || 'N/A'}</div>
                         <div><strong>Correo:</strong> ${emp.email || 'N/A'}</div>
                         <div style="grid-column: 1 / -1;"><strong>Dirección:</strong> ${emp.address || 'N/A'}</div>
@@ -336,6 +338,30 @@ const EmployeesModule = {
                     </div>
                 </div>
 
+                <div class="form-row form-row-3">
+                    <div class="form-group">
+                        <label>Horario de Entrada <span class="required">*</span></label>
+                        <input type="time" id="m-emp-entry-time" class="form-control" value="${emp && emp.entry_time ? emp.entry_time.slice(0, 5) : '09:00'}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Horario de Salida <span class="required">*</span></label>
+                        <input type="time" id="m-emp-exit-time" class="form-control" value="${emp && emp.exit_time ? emp.exit_time.slice(0, 5) : '17:00'}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Día de Descanso <span class="required">*</span></label>
+                        <select id="m-emp-rest-day" class="form-control" required>
+                            <option value="Lunes" ${emp && emp.rest_day === 'Lunes' ? 'selected' : ''}>Lunes</option>
+                            <option value="Martes" ${emp && emp.rest_day === 'Martes' ? 'selected' : ''}>Martes</option>
+                            <option value="Miércoles" ${emp && emp.rest_day === 'Miércoles' ? 'selected' : ''}>Miércoles</option>
+                            <option value="Jueves" ${emp && emp.rest_day === 'Jueves' ? 'selected' : ''}>Jueves</option>
+                            <option value="Viernes" ${emp && emp.rest_day === 'Viernes' ? 'selected' : ''}>Viernes</option>
+                            <option value="Sábado" ${emp && emp.rest_day === 'Sábado' ? 'selected' : ''}>Sábado</option>
+                            <option value="Domingo" ${(!emp || !emp.rest_day || emp.rest_day === 'Domingo') ? 'selected' : ''}>Domingo</option>
+                            <option value="Rotativo" ${emp && emp.rest_day === 'Rotativo' ? 'selected' : ''}>Rotativo / Variable</option>
+                        </select>
+                    </div>
+                </div>
+
                 <div class="form-row form-row-2">
                     <div class="form-group">
                         <label>Teléfono de Contacto</label>
@@ -426,13 +452,16 @@ const EmployeesModule = {
                 daily_salary: document.getElementById('m-emp-salary').value,
                 hire_date: document.getElementById('m-emp-hire').value,
                 shift: document.getElementById('m-emp-shift').value,
+                entry_time: document.getElementById('m-emp-entry-time').value || '09:00',
+                exit_time: document.getElementById('m-emp-exit-time').value || '17:00',
+                rest_day: document.getElementById('m-emp-rest-day').value || 'Domingo',
                 status: document.getElementById('m-emp-status').value,
                 phone: document.getElementById('m-emp-phone').value.trim(),
                 email: document.getElementById('m-emp-email').value.trim(),
                 address: document.getElementById('m-emp-addr').value.trim()
             };
 
-            if (!payload.first_name || !payload.last_name || !payload.rfc || !payload.department_id || !payload.position_id || !payload.daily_salary || !payload.hire_date) {
+            if (!payload.first_name || !payload.last_name || !payload.rfc || !payload.department_id || !payload.position_id || !payload.daily_salary || !payload.hire_date || !payload.entry_time || !payload.exit_time || !payload.rest_day) {
                 Toast.warning('Por favor completa todos los campos marcados como obligatorios (*)');
                 return;
             }

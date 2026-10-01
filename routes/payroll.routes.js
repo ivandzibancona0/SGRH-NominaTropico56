@@ -135,6 +135,7 @@ router.post('/calculate-preview', verifyToken, async (req, res) => {
                 SELECT 
                     status,
                     COALESCE(overtime_hours, 0) as overtime_hours,
+                    COALESCE(overtime_status, 'approved') as overtime_status,
                     COALESCE(is_holiday_worked, 0) as is_holiday_worked
                 FROM attendance
                 WHERE employee_id = ? AND date BETWEEN ? AND ?
@@ -152,7 +153,9 @@ router.post('/calculate-preview', verifyToken, async (req, res) => {
                     } else if (att.status.includes('absence')) {
                         absences += 1;
                     }
-                    totalOvertimeHours += parseFloat(att.overtime_hours) || 0;
+                    if (att.overtime_status === 'approved') {
+                        totalOvertimeHours += parseFloat(att.overtime_hours) || 0;
+                    }
                     if (att.is_holiday_worked) totalHolidaysWorked += 1;
                 });
             } else {

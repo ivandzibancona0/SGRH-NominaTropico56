@@ -179,14 +179,21 @@ const VacationsModule = {
                         ${row.notes || '-'}
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
-                        ${row.status === 'pending' ? `
-                            <button class="btn btn-secondary btn-sm" onclick="VacationsModule.updateStatus(${row.id}, 'approved')" title="Aprobar">
-                                <span style="width: 14px; height: 14px;">${Icons.check}</span>
+                        ${Auth.isAdmin() ? `
+                            ${row.status === 'pending' ? `
+                                <button class="btn btn-secondary btn-sm" onclick="VacationsModule.updateStatus(${row.id}, 'approved')" title="Aprobar Solicitud">
+                                    <span style="width: 14px; height: 14px;">${Icons.check}</span>
+                                </button>
+                                <button class="btn btn-outline-danger btn-sm" onclick="VacationsModule.updateStatus(${row.id}, 'rejected')" title="Rechazar Solicitud">
+                                    <span style="width: 14px; height: 14px;">${Icons.x}</span>
+                                </button>
+                            ` : ''}
+                            <button class="btn btn-secondary btn-sm" onclick="VacationsModule.openEditModal(${row.id})" title="Modificar o Corregir Periodo Vacacional">
+                                <span style="width: 14px; height: 14px;">${Icons.edit}</span>
                             </button>
-                            <button class="btn btn-outline-danger btn-sm" onclick="VacationsModule.updateStatus(${row.id}, 'rejected')" title="Rechazar">
-                                <span style="width: 14px; height: 14px;">${Icons.x}</span>
-                            </button>
-                        ` : '<span style="font-size: 0.75rem; color: var(--color-muted);">Procesado</span>'}
+                        ` : `
+                            <span style="font-size: 0.75rem; color: var(--color-muted);">${row.status === 'pending' ? 'En espera' : 'Procesado'}</span>
+                        `}
                     </td>
                 `;
             }
@@ -273,6 +280,45 @@ const VacationsModule = {
     },
 
     // -------------------------------------------------------------
+    // CÁLCULO DINÁMICO DE DÍAS HÁBILES SEGÚN DESCANSO DEL EXPEDIENTE
+    // -------------------------------------------------------------
+    calculateVacationDays(startDateStr, endDateStr, restDayName) {
+        if (!startDateStr || !endDateStr) return 0;
+        const [sY, sM, sD] = startDateStr.split('-').map(Number);
+        const [eY, eM, eD] = endDateStr.split('-').map(Number);
+        const start = new Date(sY, sM - 1, sD, 12, 0, 0);
+        const end = new Date(eY, eM - 1, eD, 12, 0, 0);
+        if (end < start) return 0;
+
+        const dayMap = {
+            'domingo': 0,
+            'lunes': 1,
+            'martes': 2,
+            'miércoles': 3,
+            'miercoles': 3,
+            'jueves': 4,
+            'viernes': 5,
+            'sábado': 6,
+            'sabado': 6
+        };
+
+        const cleanRest = (restDayName || '').toLowerCase().trim();
+        const restDayIdx = dayMap[cleanRest] !== undefined ? dayMap[cleanRest] : null;
+
+        let count = 0;
+        let curr = new Date(start);
+        while (curr <= end) {
+            const dow = curr.getDay();
+            // Descontar únicamente el día de descanso asignado en el expediente
+            if (restDayIdx === null || dow !== restDayIdx) {
+                count++;
+            }
+            curr.setDate(curr.getDate() + 1);
+        }
+        return count;
+    },
+
+    // -------------------------------------------------------------
     // MODAL REGISTRO DE PERIODO VACACIONAL
     // -------------------------------------------------------------
     openRequestModal(empId = null) {
@@ -284,6 +330,11 @@ const VacationsModule = {
         }
 
         const selectedEmp = empId ? this.employeesBalance.find(e => e.id === empId) : eligibleEmployees[0];
+
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        const defaultEnd = new Date(today.getTime() + 6 * 86400000);
+        const defaultEndStr = `${defaultEnd.getFullYear()}-${String(defaultEnd.getMonth() + 1).padStart(2, '0')}-${String(defaultEnd.getDate()).padStart(2, '0')}`;
 
         const content = `
             <form id="vac-req-form">
@@ -314,29 +365,36 @@ const VacationsModule = {
                             <div style="font-size: 1.3rem; font-weight: 800; color: var(--color-primary);" id="v-remaining-val">${selectedEmp ? selectedEmp.remaining_days : 0}</div>
                         </div>
                     </div>
+                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px dashed var(--color-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem;">
+                        <span style="color: var(--color-muted);">Día de descanso semanal en expediente:</span>
+                        <strong id="v-emp-rest-day-label" style="color: var(--color-primary);">${selectedEmp && selectedEmp.rest_day ? selectedEmp.rest_day : 'No asignado'}</strong>
+                    </div>
                 </div>
 
                 <div class="form-row form-row-2">
                     <div class="form-group">
                         <label>Fecha de Inicio <span class="required">*</span></label>
-                        <input type="date" id="v-req-start" class="form-control" value="${new Date().toISOString().split('T')[0]}" required>
+                        <input type="date" id="v-req-start" min="${todayStr}" class="form-control" value="${todayStr}" required>
                     </div>
                     <div class="form-group">
                         <label>Fecha de Término <span class="required">*</span></label>
-                        <input type="date" id="v-req-end" class="form-control" value="${new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0]}" required>
+                        <input type="date" id="v-req-end" min="${todayStr}" class="form-control" value="${defaultEndStr}" required>
                     </div>
                 </div>
 
                 <div class="form-row form-row-2">
                     <div class="form-group">
                         <label>Días Solicitados <span class="required">*</span></label>
-                        <input type="number" min="1" max="${selectedEmp ? selectedEmp.remaining_days : 30}" id="v-req-days" class="form-control" value="${Math.min(6, selectedEmp ? selectedEmp.remaining_days : 6)}" required>
+                        <input type="number" min="1" id="v-req-days" class="form-control" value="0" readonly style="background: var(--color-bg); font-weight: 700; cursor: not-allowed;" required>
+                        <small style="color: var(--color-muted); font-size: 0.75rem; display: block; margin-top: 0.25rem;">Calculado automáticamente descontando el día de descanso del expediente.</small>
                     </div>
                     <div class="form-group">
                         <label>% Prima Vacacional Aplicable</label>
                         <input type="number" step="1" id="v-req-pct" class="form-control" value="25" placeholder="25%">
                     </div>
                 </div>
+
+                <div id="v-days-warning" style="display: none; background: var(--color-danger-bg, #FEE2E2); color: var(--color-danger, #DC2626); padding: 0.65rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; margin-bottom: 1rem; border: 1px solid rgba(220, 38, 38, 0.2);"></div>
 
                 <div class="form-group">
                     <label>Notas / Observaciones</label>
@@ -356,30 +414,111 @@ const VacationsModule = {
             footer
         });
 
-        // Update live balance info when employee select changes
+        const recalculateDays = () => {
+            const empIdVal = parseInt(document.getElementById('v-req-emp').value);
+            const emp = this.employeesBalance.find(em => em.id === empIdVal);
+            const startInput = document.getElementById('v-req-start');
+            const endInput = document.getElementById('v-req-end');
+            const daysInput = document.getElementById('v-req-days');
+            const warningBox = document.getElementById('v-days-warning');
+            const submitBtn = document.getElementById('btn-save-vac-req');
+            const restLabel = document.getElementById('v-emp-rest-day-label');
+
+            if (!emp) return;
+
+            if (restLabel) {
+                restLabel.textContent = emp.rest_day || 'No asignado';
+            }
+
+            const startVal = startInput.value;
+            let endVal = endInput.value;
+
+            // Validación: No permitir fecha de inicio en el pasado
+            if (startVal && startVal < todayStr) {
+                Toast.warning('No se pueden programar vacaciones en fechas pasadas.');
+                startInput.value = todayStr;
+            }
+
+            // Validación: Fecha de fin nunca inferior a la de inicio
+            if (startInput.value) {
+                endInput.min = startInput.value;
+                if (endVal && endVal < startInput.value) {
+                    endInput.value = startInput.value;
+                    endVal = startInput.value;
+                }
+            }
+
+            // Cálculo dinámico utilizando el rest_day del expediente de este colaborador
+            const calculatedDays = this.calculateVacationDays(startInput.value, endInput.value, emp.rest_day);
+            daysInput.value = calculatedDays;
+
+            // Validación: Días solicitados nunca superiores a los disponibles
+            const remaining = emp.remaining_days || 0;
+            if (calculatedDays > remaining) {
+                warningBox.style.display = 'block';
+                warningBox.innerHTML = `⚠️ Los días calculados (<strong>${calculatedDays} días</strong>) superan los días disponibles de este colaborador (<strong>${remaining} días pendientes</strong>).`;
+                submitBtn.disabled = true;
+            } else if (calculatedDays <= 0) {
+                warningBox.style.display = 'block';
+                warningBox.innerHTML = `⚠️ El rango de fechas seleccionado debe abarcar al menos un día hábil laborable.`;
+                submitBtn.disabled = true;
+            } else {
+                warningBox.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        };
+
+        // Update live balance info & rest day when employee select changes
         document.getElementById('v-req-emp').addEventListener('change', (e) => {
             const emp = this.employeesBalance.find(em => em.id === parseInt(e.target.value));
             if (emp) {
                 document.getElementById('v-earned-val').textContent = emp.earned_days;
                 document.getElementById('v-taken-val').textContent = emp.taken_days;
                 document.getElementById('v-remaining-val').textContent = emp.remaining_days;
-                document.getElementById('v-req-days').max = emp.remaining_days;
-                if (parseInt(document.getElementById('v-req-days').value) > emp.remaining_days) {
-                    document.getElementById('v-req-days').value = emp.remaining_days;
-                }
             }
+            recalculateDays();
         });
 
+        document.getElementById('v-req-start').addEventListener('change', recalculateDays);
+        document.getElementById('v-req-start').addEventListener('input', recalculateDays);
+        document.getElementById('v-req-end').addEventListener('change', recalculateDays);
+        document.getElementById('v-req-end').addEventListener('input', recalculateDays);
+
+        // Run calculation once upon opening modal
+        recalculateDays();
+
         document.getElementById('btn-save-vac-req').addEventListener('click', async () => {
+            const empIdVal = parseInt(document.getElementById('v-req-emp').value);
+            const emp = this.employeesBalance.find(em => em.id === empIdVal);
             const employee_id = document.getElementById('v-req-emp').value;
             const start_date = document.getElementById('v-req-start').value;
             const end_date = document.getElementById('v-req-end').value;
-            const days_requested = document.getElementById('v-req-days').value;
+            const days_requested = parseInt(document.getElementById('v-req-days').value);
             const vacation_pay_percentage = document.getElementById('v-req-pct').value;
             const notes = document.getElementById('v-req-notes').value.trim();
 
             if (!employee_id || !start_date || !end_date || !days_requested) {
                 Toast.warning('Completa todos los campos obligatorios.');
+                return;
+            }
+
+            if (start_date < todayStr) {
+                Toast.warning('No se pueden programar vacaciones en fechas pasadas.');
+                return;
+            }
+
+            if (end_date < start_date) {
+                Toast.warning('La fecha de fin del periodo vacacional no puede ser inferior a la de inicio.');
+                return;
+            }
+
+            if (emp && days_requested > emp.remaining_days) {
+                Toast.warning(`Los días solicitados (${days_requested}) superan los días disponibles (${emp.remaining_days}).`);
+                return;
+            }
+
+            if (days_requested <= 0) {
+                Toast.warning('Debe solicitar al menos un día hábil laborable.');
                 return;
             }
 
@@ -397,7 +536,161 @@ const VacationsModule = {
         });
     },
 
+    // -------------------------------------------------------------
+    // MODAL MODIFICAR / CORREGIR PERIODO VACACIONAL (Solo Administrador)
+    // -------------------------------------------------------------
+    async openEditModal(requestId) {
+        if (!Auth.isAdmin()) {
+            Toast.warning('Solo los administradores tienen permiso para modificar periodos vacacionales.');
+            return;
+        }
+
+        try {
+            const res = await API.get(`/vacations/requests/${requestId}`);
+            const reqData = res.data;
+            const emp = this.employeesBalance.find(em => em.id === reqData.employee_id) || {
+                remaining_days: 30,
+                rest_day: reqData.rest_day || null
+            };
+
+            const content = `
+                <form id="edit-vac-form">
+                    <div style="background: var(--color-bg); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; border: 1px solid var(--color-border); font-size: 0.85rem;">
+                        <div style="font-weight: 700; font-size: 1rem; color: var(--color-dark);">${reqData.first_name} ${reqData.last_name} (${reqData.code})</div>
+                        <div style="color: var(--color-muted);">${reqData.position_name} · ${reqData.department_name}</div>
+                        <div style="margin-top: 0.5rem; display: flex; justify-content: space-between;">
+                            <span>Día de descanso en expediente: <strong style="color: var(--color-primary);">${reqData.rest_day || emp.rest_day || 'No asignado'}</strong></span>
+                            <span>Estatus: <strong style="text-transform: capitalize;">${reqData.status}</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label>Fecha de Inicio <span class="required">*</span></label>
+                            <input type="date" id="v-edit-start" class="form-control" value="${reqData.start_date}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha de Término <span class="required">*</span></label>
+                            <input type="date" id="v-edit-end" class="form-control" value="${reqData.end_date}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label>Días Solicitados <span class="required">*</span></label>
+                            <input type="number" min="1" id="v-edit-days" class="form-control" value="${reqData.days_requested}" readonly style="background: var(--color-bg); font-weight: 700; cursor: not-allowed;" required>
+                            <small style="color: var(--color-muted); font-size: 0.75rem;">Recalculado automáticamente descontando día de descanso.</small>
+                        </div>
+                        <div class="form-group">
+                            <label>% Prima Vacacional</label>
+                            <input type="number" step="1" id="v-edit-pct" class="form-control" value="${parseFloat(reqData.vacation_pay_percentage).toFixed(0)}">
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label>Estatus de Solicitud</label>
+                            <select id="v-edit-status" class="form-control">
+                                <option value="approved" ${reqData.status === 'approved' ? 'selected' : ''}>Aprobada</option>
+                                <option value="pending" ${reqData.status === 'pending' ? 'selected' : ''}>Pendiente</option>
+                                <option value="rejected" ${reqData.status === 'rejected' ? 'selected' : ''}>Rechazada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notas / Observaciones</label>
+                            <input type="text" id="v-edit-notes" class="form-control" value="${reqData.notes || ''}">
+                        </div>
+                    </div>
+
+                    <div id="v-edit-warning" style="display: none; background: var(--color-danger-bg, #FEE2E2); color: var(--color-danger, #DC2626); padding: 0.65rem 1rem; border-radius: var(--radius-md); font-size: 0.82rem; margin-top: 0.5rem; border: 1px solid rgba(220, 38, 38, 0.2);"></div>
+                </form>
+            `;
+
+            const footer = `
+                <button class="btn btn-secondary" onclick="Modal.close()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-save-edit-vac">Guardar Corrección</button>
+            `;
+
+            Modal.open({
+                title: `Corregir Periodo Vacacional: ${reqData.first_name} ${reqData.last_name}`,
+                content,
+                footer
+            });
+
+            const recalculateEditDays = () => {
+                const startVal = document.getElementById('v-edit-start').value;
+                const endInput = document.getElementById('v-edit-end');
+                const daysInput = document.getElementById('v-edit-days');
+                const warnBox = document.getElementById('v-edit-warning');
+                const saveBtn = document.getElementById('btn-save-edit-vac');
+
+                if (startVal) {
+                    endInput.min = startVal;
+                    if (endInput.value && endInput.value < startVal) {
+                        endInput.value = startVal;
+                    }
+                }
+
+                const restDay = reqData.rest_day || (emp ? emp.rest_day : null) || null;
+                const calculated = this.calculateVacationDays(startVal, endInput.value, restDay);
+                daysInput.value = calculated;
+
+                if (calculated <= 0) {
+                    warnBox.style.display = 'block';
+                    warnBox.textContent = 'El rango de fechas debe tener al menos un día laborable.';
+                    saveBtn.disabled = true;
+                } else {
+                    warnBox.style.display = 'none';
+                    saveBtn.disabled = false;
+                }
+            };
+
+            document.getElementById('v-edit-start').addEventListener('change', recalculateEditDays);
+            document.getElementById('v-edit-start').addEventListener('input', recalculateEditDays);
+            document.getElementById('v-edit-end').addEventListener('change', recalculateEditDays);
+            document.getElementById('v-edit-end').addEventListener('input', recalculateEditDays);
+
+            document.getElementById('btn-save-edit-vac').addEventListener('click', async () => {
+                const start_date = document.getElementById('v-edit-start').value;
+                const end_date = document.getElementById('v-edit-end').value;
+                const days_requested = parseInt(document.getElementById('v-edit-days').value);
+                const vacation_pay_percentage = document.getElementById('v-edit-pct').value;
+                const status = document.getElementById('v-edit-status').value;
+                const notes = document.getElementById('v-edit-notes').value.trim();
+
+                if (end_date < start_date) {
+                    Toast.warning('La fecha de fin no puede ser inferior a la de inicio.');
+                    return;
+                }
+
+                if (days_requested <= 0) {
+                    Toast.warning('Debe haber al menos un día hábil en el rango.');
+                    return;
+                }
+
+                try {
+                    await API.put(`/vacations/requests/${requestId}`, {
+                        start_date, end_date, days_requested, vacation_pay_percentage, status, notes
+                    });
+                    Toast.success('Periodo vacacional corregido exitosamente.');
+                    Modal.close();
+                    await this.loadBalanceData();
+                    this.infinityTable.resetAndLoad();
+                } catch (e) {
+                    Toast.danger(e.message || 'Error al corregir periodo vacacional.');
+                }
+            });
+        } catch (e) {
+            Toast.danger('Error al consultar datos de la solicitud.');
+        }
+    },
+
     async updateStatus(id, status) {
+        if (!Auth.isAdmin()) {
+            Toast.warning('Solo los administradores pueden cambiar el estatus de las solicitudes.');
+            return;
+        }
+
         try {
             await API.put(`/vacations/requests/${id}/status`, { status });
             Toast.success(`Solicitud de vacaciones actualizada.`);

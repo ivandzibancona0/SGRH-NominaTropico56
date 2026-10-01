@@ -10,6 +10,10 @@ const Modal = {
             this.overlay.id = 'global-modal-overlay';
             this.overlay.addEventListener('click', (e) => {
                 if (e.target === this.overlay) {
+                    if (window.PunchClock && window.PunchClock.isOpen) {
+                        window.PunchClock.requestClose();
+                        return;
+                    }
                     this.close();
                 }
             });
@@ -17,6 +21,10 @@ const Modal = {
 
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && this.isOpen()) {
+                    if (window.PunchClock && window.PunchClock.isOpen) {
+                        window.PunchClock.requestClose();
+                        return;
+                    }
                     this.close();
                 }
             });

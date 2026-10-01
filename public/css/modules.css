@@ -331,21 +331,187 @@
   margin-bottom: 0.5rem;
 }
 
-/* Print Styles */
+/* =============================================================
+   ESTILOS DE IMPRESIÓN OFICIAL DE RECIBO DE NÓMINA (A4 / CARTA)
+   ============================================================= */
 @media print {
-  body * {
-    visibility: hidden;
+  @page {
+    size: letter portrait;
+    margin: 8mm 12mm;
   }
-  .receipt-container, .receipt-container * {
-    visibility: visible;
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #FFFFFF !important;
+    color: var(--color-dark, #2A2421) !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    width: 100% !important;
+  }
+
+  /* Ocultar interfaz de aplicación, menú, cabecera y botones del modal */
+  #auth-view,
+  #app-view,
+  .toast-container,
+  .modal-header,
+  .modal-footer,
+  .modal-close-btn,
+  .mobile-bottom-nav,
+  .mobile-drawer-overlay {
+    display: none !important;
+  }
+
+  /* Desactivar fondo oscuro, posición fija y recorte del modal */
+  .modal-overlay {
+    position: static !important;
+    inset: auto !important;
+    display: block !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+    z-index: auto !important;
+  }
+
+  .modal-container {
+    position: static !important;
+    display: block !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: transparent !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .modal-body {
+    position: static !important;
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  /* Formato y diseño exacto del recibo impreso */
   .receipt-container {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    border: none;
-    box-shadow: none;
-    padding: 0;
+    display: block !important;
+    position: relative !important;
+    visibility: visible !important;
+    max-width: 720px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    padding: 1.75rem 2rem !important;
+    background: #FFFFFF !important;
+    border: 2px solid var(--color-border, #E8DCD1) !important;
+    border-radius: var(--radius-lg, 16px) !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .receipt-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border-bottom: 2px solid var(--color-primary, #D95B28) !important;
+    padding-bottom: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .receipt-logo-block {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+
+  .receipt-logo-block img {
+    width: 60px !important;
+    height: 60px !important;
+  }
+
+  .receipt-title {
+    text-align: right !important;
+  }
+
+  .receipt-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1rem !important;
+    background: var(--color-bg, #FAF5EE) !important;
+    padding: 0.85rem 1.25rem !important;
+    border-radius: var(--radius-md, 10px) !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .receipt-breakdown {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .breakdown-box h4 {
+    font-size: 0.85rem !important;
+    padding-bottom: 0.35rem !important;
+    border-bottom: 1px solid var(--color-border, #E8DCD1) !important;
+    margin-bottom: 0.4rem !important;
+  }
+
+  .breakdown-row {
+    display: flex !important;
+    justify-content: space-between !important;
+    padding: 0.2rem 0 !important;
+    font-size: 0.82rem !important;
+  }
+
+  .receipt-net-total {
+    background: var(--color-primary-light, #FBECE4) !important;
+    border: 1px solid var(--color-primary, #D95B28) !important;
+    padding: 0.85rem 1.25rem !important;
+    border-radius: var(--radius-md, 10px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .receipt-signatures {
+    display: flex !important;
+    justify-content: space-around !important;
+    margin-top: 2.5rem !important;
+    padding-top: 0.5rem !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .signature-line {
+    width: 200px !important;
+    border-top: 1px solid var(--color-dark, #2A2421) !important;
+    text-align: center !important;
+    font-size: 0.78rem !important;
+    padding-top: 0.35rem !important;
   }
 }
+

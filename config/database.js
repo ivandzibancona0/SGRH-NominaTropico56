@@ -125,6 +125,9 @@ async function createTables() {
             contract_type VARCHAR(50) DEFAULT 'Indeterminado',
             daily_salary DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
             shift VARCHAR(50) DEFAULT 'Matutino',
+            entry_time TIME DEFAULT '09:00:00',
+            exit_time TIME DEFAULT '17:00:00',
+            rest_day VARCHAR(20) DEFAULT 'Domingo',
             status ENUM('active', 'inactive', 'vacation', 'leave') DEFAULT 'active',
             avatar VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -144,6 +147,7 @@ async function createTables() {
             check_out TIME,
             status ENUM('present', 'late', 'justified_absence', 'unjustified_absence', 'leave', 'vacation', 'early_departure') DEFAULT 'present',
             overtime_hours DECIMAL(4, 2) DEFAULT 0.00,
+            overtime_status ENUM('pending', 'approved', 'compensated', 'rejected') DEFAULT 'approved',
             is_holiday_worked TINYINT(1) DEFAULT 0,
             notes TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -247,6 +251,24 @@ async function createTables() {
 
     for (const q of queries) {
         await query(q);
+    }
+
+    // Migración no destructiva para columnas de horario y descanso
+    try {
+        const empCols = await query("SHOW COLUMNS FROM employees LIKE 'entry_time'");
+        if (empCols.length === 0) {
+            await query("ALTER TABLE employees ADD COLUMN entry_time TIME DEFAULT '09:00:00', ADD COLUMN exit_time TIME DEFAULT '17:00:00', ADD COLUMN rest_day VARCHAR(20) DEFAULT 'Domingo'");
+        }
+
+        const attCols = await query("SHOW COLUMNS FROM attendance LIKE 'overtime_status'");
+        if (attCols.length === 0) {
+            await query("ALTER TABLE attendance ADD COLUMN overtime_status ENUM('pending', 'approved', 'compensated', 'rejected') DEFAULT 'approved'");
+        }
+
+        // Asegurar que el ENUM de status en attendance incluye 'early_departure'
+        await query("ALTER TABLE attendance MODIFY COLUMN status ENUM('present', 'late', 'justified_absence', 'unjustified_absence', 'leave', 'vacation', 'early_departure') DEFAULT 'present'");
+    } catch (migErr) {
+        console.warn('Nota sobre migración de columnas:', migErr.message);
     }
 }
 
