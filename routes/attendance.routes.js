@@ -28,10 +28,18 @@ router.get('/check-lock', verifyToken, async (req, res) => {
     }
 });
 
+// Helper to get local date 'YYYY-MM-DD' avoiding UTC timezone offset issues
+function getLocalDateStr(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 // GET /api/attendance/stats - attendance summary metrics
 router.get('/stats', verifyToken, async (req, res) => {
     try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getLocalDateStr();
         const monthStart = today.substring(0, 7) + '-01';
 
         const todayAttendance = await query(`
@@ -73,7 +81,7 @@ router.get('/stats', verifyToken, async (req, res) => {
 // GET /api/attendance/daily-sheet?date=YYYY-MM-DD - get all active employees with attendance for a specific date
 router.get('/daily-sheet', verifyToken, async (req, res) => {
     try {
-        const date = req.query.date || new Date().toISOString().split('T')[0];
+        const date = req.query.date || getLocalDateStr();
         const closedPayroll = await getClosedPayrollForDate(date);
 
         const sheet = await query(`
@@ -272,18 +280,8 @@ router.post('/punch', verifyToken, async (req, res) => {
         }
 
         const now = new Date();
-        const dateStr = now.toISOString().split('T')[0];
+        const dateStr = getLocalDateStr(now);
 
-        // Bloquear checada si hoy pertenece a un periodo cerrado
-        if (type === 'check_in' || type === 'check_out') {
-            const closedPayroll = await getClosedPayrollForDate(dateStr);
-            if (closedPayroll) {
-                return res.status(403).json({
-                    success: false,
-                    message: `El reloj checador no puede registrar checadas: La fecha actual (${dateStr}) pertenece al periodo cerrado "${closedPayroll.period_name}".`
-                });
-            }
-        }
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
@@ -305,19 +303,58 @@ router.post('/punch', verifyToken, async (req, res) => {
         }
         const emp = empRes[0];
 
-        const existing = await query('SELECT * FROM attendance WHERE employee_id = ? AND date = ?', [employee_id, dateStr]);
-        const record = existing[0] || null;
-
-        const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
         const entrySec = timeToSeconds(emp.entry_time || '09:00:00');
         const exitSec = timeToSeconds(emp.exit_time || '17:00:00');
+        const isOvernight = exitSec < entrySec; // Turno nocturno que cruza la medianoche
+
+        // Buscar registro existente de hoy
+        const existingToday = await query('SELECT * FROM attendance WHERE employee_id = ? AND date = ?', [employee_id, dateStr]);
+        let record = existingToday[0] || null;
+
+        // Para turnos nocturnos: verificar si hay una jornada abierta iniciada el día de ayer
+        let isClosingYesterday = false;
+        let yesterdayStr = null;
+        if (isOvernight) {
+            const yesterdayDate = new Date(now);
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            yesterdayStr = getLocalDateStr(yesterdayDate);
+
+            const existingYesterday = await query(
+                'SELECT * FROM attendance WHERE employee_id = ? AND date = ? AND check_in IS NOT NULL AND (check_out IS NULL OR check_out = "")',
+                [employee_id, yesterdayStr]
+            );
+
+            // Si hay jornada abierta de ayer y estamos haciendo check_out o consulta de estatus sin entrada hoy
+            if (existingYesterday.length > 0) {
+                if (type === 'check_out' || (type === 'status' && (!record || !record.check_in))) {
+                    record = existingYesterday[0];
+                    isClosingYesterday = true;
+                }
+            }
+        }
+
+        // Determinar fecha efectiva del registro a evaluar / actualizar
+        const targetDateStr = record ? record.date : dateStr;
+
+        // Bloquear checada si la fecha pertenece a un periodo de nómina cerrado
+        if (type === 'check_in' || type === 'check_out') {
+            const closedPayroll = await getClosedPayrollForDate(targetDateStr);
+            if (closedPayroll) {
+                return res.status(403).json({
+                    success: false,
+                    message: `El reloj checador no puede registrar checadas: La fecha (${targetDateStr}) pertenece al periodo cerrado "${closedPayroll.period_name}".`
+                });
+            }
+        }
+
+        const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
         if (type === 'check_in') {
             // Si la hora de entrada es mayor a la hora del expediente -> Retardo
             const isLate = nowSec > entrySec;
             const status = isLate ? 'late' : 'present';
 
-            if (record) {
+            if (record && !isClosingYesterday) {
                 await query('UPDATE attendance SET check_in = ?, status = ? WHERE id = ?', [timeStr, status, record.id]);
             } else {
                 await query('INSERT INTO attendance (employee_id, date, check_in, status) VALUES (?, ?, ?, ?)', [employee_id, dateStr, timeStr, status]);
@@ -337,8 +374,19 @@ router.post('/punch', verifyToken, async (req, res) => {
                 message: msg
             });
         } else if (type === 'check_out') {
-            // Si la salida es menor a la hora del expediente -> Salida anticipada
-            const isEarly = nowSec < exitSec;
+            // Construir la fecha y hora exacta programada para la salida
+            const [tYear, tMonth, tDay] = targetDateStr.split('-').map(Number);
+            const [exH, exM, exS] = (emp.exit_time || '17:00:00').split(':').map(Number);
+            const scheduledExit = new Date(tYear, tMonth - 1, tDay, exH, exM, exS || 0);
+
+            // Si es turno nocturno, la salida programada corresponde al día siguiente de la entrada
+            if (isOvernight) {
+                scheduledExit.setDate(scheduledExit.getDate() + 1);
+            }
+
+            // Comparar tiempo real con la salida programada
+            const diffSeconds = Math.floor((now.getTime() - scheduledExit.getTime()) / 1000);
+            const isEarly = diffSeconds < 0;
             let status;
             let ot = 0;
             let otStatus = 'approved';
@@ -348,8 +396,7 @@ router.post('/punch', verifyToken, async (req, res) => {
                 ot = 0;
                 otStatus = 'approved';
             } else {
-                // Horas completas realizadas después de la hora de salida
-                const diffSeconds = nowSec - exitSec;
+                // Horas completas transcurridas después del horario oficial de salida
                 const diffMinutes = Math.floor(diffSeconds / 60);
                 ot = Math.floor(diffMinutes / 60);
 
@@ -359,7 +406,7 @@ router.post('/punch', verifyToken, async (req, res) => {
                     otStatus = 'approved';
                 }
 
-                // Preservar retardo de la mañana si existía
+                // Preservar retardo de la entrada si existía
                 if (record && record.status === 'late') {
                     status = 'late';
                 } else {

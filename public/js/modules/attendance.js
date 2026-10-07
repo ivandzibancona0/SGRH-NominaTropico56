@@ -1,3 +1,11 @@
+// Helper to get local date 'YYYY-MM-DD' avoiding UTC timezone offset issues
+function getLocalDateStr(dateObj = new Date()) {
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(dateObj.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+}
+
 // Attendance & Overtime Module with Infinity Scroll
 const AttendanceModule = {
     infinityTable: null,
@@ -125,7 +133,7 @@ const AttendanceModule = {
         const statusSelect = document.getElementById('att-filter-status');
 
         document.getElementById('att-btn-today').addEventListener('click', () => {
-            const today = new Date().toISOString().split('T')[0];
+            const today = getLocalDateStr();
             dateInput.value = today;
             this.infinityTable.resetAndLoad();
         });
@@ -133,7 +141,7 @@ const AttendanceModule = {
         document.getElementById('att-btn-yesterday').addEventListener('click', () => {
             const d = new Date();
             d.setDate(d.getDate() - 1);
-            dateInput.value = d.toISOString().split('T')[0];
+            dateInput.value = getLocalDateStr(d);
             this.infinityTable.resetAndLoad();
         });
 
@@ -303,7 +311,7 @@ const AttendanceModule = {
     },
 
     async openDailySheetModal() {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getLocalDateStr();
 
         try {
             const res = await API.get('/attendance/daily-sheet', { date: today });
@@ -514,7 +522,7 @@ const AttendanceModule = {
                 <div class="form-row form-row-2">
                     <div class="form-group">
                         <label>Fecha <span class="required">*</span></label>
-                        <input type="date" id="s-att-date" class="form-control" value="${new Date().toISOString().split('T')[0]}" required>
+                        <input type="date" id="s-att-date" class="form-control" value="${getLocalDateStr()}" required>
                     </div>
                     <div class="form-group">
                         <label>Estatus</label>
