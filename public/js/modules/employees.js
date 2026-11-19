@@ -142,7 +142,10 @@ const EmployeesModule = {
                             </div>
                             <div>
                                 <strong style="color: var(--color-dark);">${emp.first_name} ${emp.last_name}</strong>
-                                <div style="font-size: 0.75rem; color: var(--color-muted); font-family: monospace;">${emp.code}</div>
+                                <div style="font-size: 0.75rem; color: var(--color-muted); font-family: monospace; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap;">
+                                    <span>${emp.code}</span>
+                                    ${emp.has_face_enrolled ? `<span class="badge-face-enrolled" title="Reconocimiento facial registrado"><span style="width: 11px; height: 11px; display: inline-flex;">${Icons.faceId}</span> Facial</span>` : ''}
+                                </div>
                             </div>
                         </div>
                     </td>
@@ -168,6 +171,9 @@ const EmployeesModule = {
                         </span>
                     </td>
                     <td style="text-align: right; white-space: nowrap;">
+                        <button class="btn btn-secondary btn-sm btn-icon-only" onclick="EmployeesModule.openFaceEnrollModal(${emp.id})" title="${emp.has_face_enrolled ? 'Actualizar / Gestionar Rostro' : 'Registrar Rostro Facial'}" style="${emp.has_face_enrolled ? 'color: var(--color-success); border-color: rgba(46,125,50,0.35);' : ''}">
+                            <span style="width: 15px; height: 15px;">${Icons.faceId}</span>
+                        </button>
                         <button class="btn btn-secondary btn-sm btn-icon-only" onclick="EmployeesModule.viewEmployeeDetails(${emp.id})" title="Ver Expediente">
                             <span style="width: 15px; height: 15px;">${Icons.eye}</span>
                         </button>
@@ -215,6 +221,12 @@ const EmployeesModule = {
                         <div><strong>Día de Descanso:</strong> ${emp.rest_day || 'Domingo'}</div>
                         <div><strong>Teléfono:</strong> ${emp.phone || 'N/A'}</div>
                         <div><strong>Correo:</strong> ${emp.email || 'N/A'}</div>
+                        <div style="grid-column: 1 / -1;">
+                            <strong>Reconocimiento Facial:</strong>
+                            ${emp.has_face_enrolled
+                                ? `<span class="badge badge-success" style="margin-left: 0.35rem;">Registrado</span> <small style="color: var(--color-muted); margin-left: 0.35rem;">${emp.face_enrolled_at ? `(${emp.face_enrolled_at})` : ''}</small>`
+                                : `<span class="badge badge-secondary" style="margin-left: 0.35rem;">Sin registro facial</span>`}
+                        </div>
                         <div style="grid-column: 1 / -1;"><strong>Dirección:</strong> ${emp.address || 'N/A'}</div>
                     </div>
 
@@ -243,7 +255,13 @@ const EmployeesModule = {
                 title: `Expediente: ${emp.first_name} ${emp.last_name}`,
                 content,
                 size: 'lg',
-                footer: `<button class="btn btn-secondary" onclick="Modal.close()">Cerrar</button>`
+                footer: `
+                    <button class="btn btn-secondary" onclick="EmployeesModule.openFaceEnrollModal(${emp.id})">
+                        <span style="width: 16px; height: 16px; display: inline-flex;">${Icons.faceId}</span>
+                        <span>${emp.has_face_enrolled ? 'Actualizar Rostro' : 'Registrar Rostro'}</span>
+                    </button>
+                    <button class="btn btn-secondary" onclick="Modal.close()">Cerrar</button>
+                `
             });
         } catch (e) {
             Toast.danger('Error al obtener expediente del empleado.');
@@ -490,6 +508,300 @@ const EmployeesModule = {
             this.infinityTable.resetAndLoad();
         } catch (e) {
             Toast.danger(e.message || 'No se pudo actualizar el estatus.');
+        }
+    },
+
+    async openFaceEnrollModal(empId) {
+        try {
+            const [empRes, faceSettings] = await Promise.all([
+                API.get(`/employees/${empId}`),
+                FaceService.getSettings()
+            ]);
+            const emp = empRes.data;
+            if (!emp) {
+                Toast.danger('Colaborador no encontrado.');
+                return;
+            }
+
+            const stepsInfo = [
+                { num: 1, title: '1. De frente', hint: 'Mira directamente a la cámara con expresión neutral.' },
+                { num: 2, title: '2. Giro izq.', hint: 'Gira ligeramente tu rostro hacia la izquierda.' },
+                { num: 3, title: '3. Giro der.', hint: 'Gira ligeramente tu rostro hacia la derecha.' }
+            ];
+
+            let capturedDescriptors = [];
+            let isCameraReady = false;
+            let isCapturing = false;
+            let isModalActive = true;
+
+            const content = `
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <!-- Employee Header -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; background: var(--color-bg); padding: 0.85rem 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="user-avatar-initial" style="width: 40px; height: 40px; font-size: 0.95rem;">
+                                ${emp.first_name[0]}${emp.last_name[0]}
+                            </div>
+                            <div>
+                                <strong style="color: var(--color-dark); display: block;">${emp.first_name} ${emp.last_name}</strong>
+                                <span style="font-size: 0.78rem; color: var(--color-muted);">${emp.code} · ${emp.position_name || ''} (${emp.department_name || ''})</span>
+                            </div>
+                        </div>
+                        <div>
+                            ${emp.has_face_enrolled
+                                ? `<span class="badge badge-success">Rostro Registrado</span>`
+                                : `<span class="badge badge-secondary">Sin Registro Facial</span>`}
+                        </div>
+                    </div>
+
+                    <!-- 3-Step Guidance -->
+                    <div class="face-enroll-steps" id="face-enroll-steps">
+                        ${stepsInfo.map((s, idx) => `
+                            <div class="face-enroll-step ${idx === 0 ? 'active' : ''}" id="face-step-${idx}">
+                                <div>${s.title}</div>
+                                <div style="font-size: 0.7rem; opacity: 0.85;" id="face-step-state-${idx}">${idx === 0 ? 'Siguiente' : 'Pendiente'}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Camera Stage -->
+                    <div class="face-camera-stage">
+                        <video id="enroll-face-video" autoplay muted playsinline></video>
+                        <canvas id="enroll-face-canvas"></canvas>
+                        <div class="face-guide-oval" id="enroll-guide-oval"></div>
+                        <div class="face-status-pill" id="enroll-status-pill">Cargando modelos biométricos locales...</div>
+                    </div>
+
+                    <!-- Step Hint & Capture Controls -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap;">
+                        <small id="enroll-step-hint" style="color: var(--color-muted); font-size: 0.82rem; flex: 1;">
+                            ${stepsInfo[0].hint}
+                        </small>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-enroll-reset" disabled>
+                                Reiniciar
+                            </button>
+                            <button type="button" class="btn btn-primary btn-sm" id="btn-enroll-capture" disabled>
+                                <span style="width: 16px; height: 16px; display: inline-flex;">${Icons.camera}</span>
+                                <span id="btn-enroll-capture-label">Capturar Muestra (1/3)</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LFPDPPP Consent -->
+                    <div style="background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.75rem 0.9rem;">
+                        <label style="display: flex; align-items: flex-start; gap: 0.55rem; font-size: 0.8rem; color: var(--color-dark); cursor: pointer; margin: 0;">
+                            <input type="checkbox" id="enroll-consent-chk" style="margin-top: 2px; width: 16px; height: 16px; accent-color: var(--color-primary); flex-shrink: 0;">
+                            <span>
+                                Confirmo que <strong>${emp.first_name} ${emp.last_name}</strong> otorgó su consentimiento para almacenar únicamente su vector matemático facial (sin guardar fotografías) con el fin exclusivo de control de asistencia.
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            `;
+
+            const footer = `
+                ${emp.has_face_enrolled ? `
+                    <button type="button" class="btn btn-outline-danger" id="btn-enroll-delete" style="margin-right: auto;">
+                        Eliminar Biometría
+                    </button>
+                ` : ''}
+                <button type="button" class="btn btn-secondary" onclick="Modal.close()">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btn-enroll-save" disabled>
+                    <span style="width: 16px; height: 16px; display: inline-flex;">${Icons.shieldCheck}</span>
+                    <span>Guardar Registro Facial</span>
+                </button>
+            `;
+
+            Modal.open({
+                title: 'Enrolamiento Biométrico Facial',
+                content,
+                size: 'md',
+                footer,
+                onClose: () => {
+                    isModalActive = false;
+                    FaceService.stopCamera();
+                }
+            });
+
+            const videoEl = document.getElementById('enroll-face-video');
+            const canvasEl = document.getElementById('enroll-face-canvas');
+            const ovalEl = document.getElementById('enroll-guide-oval');
+            const pillEl = document.getElementById('enroll-status-pill');
+            const hintEl = document.getElementById('enroll-step-hint');
+            const captureBtn = document.getElementById('btn-enroll-capture');
+            const captureLabel = document.getElementById('btn-enroll-capture-label');
+            const resetBtn = document.getElementById('btn-enroll-reset');
+            const saveBtn = document.getElementById('btn-enroll-save');
+            const consentChk = document.getElementById('enroll-consent-chk');
+            const deleteBtn = document.getElementById('btn-enroll-delete');
+
+            const setStatus = (text, variant = '') => {
+                if (!pillEl) return;
+                pillEl.textContent = text;
+                pillEl.className = `face-status-pill ${variant}`.trim();
+            };
+
+            const updateControls = () => {
+                const count = capturedDescriptors.length;
+                stepsInfo.forEach((s, idx) => {
+                    const stepEl = document.getElementById(`face-step-${idx}`);
+                    const stateEl = document.getElementById(`face-step-state-${idx}`);
+                    if (!stepEl || !stateEl) return;
+                    stepEl.classList.remove('active', 'done');
+                    if (idx < count) {
+                        stepEl.classList.add('done');
+                        stateEl.textContent = 'Capturada ✓';
+                    } else if (idx === count) {
+                        stepEl.classList.add('active');
+                        stateEl.textContent = 'Siguiente';
+                    } else {
+                        stateEl.textContent = 'Pendiente';
+                    }
+                });
+
+                if (count < 3) {
+                    hintEl.textContent = stepsInfo[count].hint;
+                    captureLabel.textContent = `Capturar Muestra (${count + 1}/3)`;
+                    captureBtn.disabled = !isCameraReady || isCapturing;
+                } else {
+                    hintEl.textContent = '¡3 muestras capturadas! Marca el consentimiento y presiona "Guardar Registro Facial".';
+                    captureLabel.textContent = 'Muestras Completas (3/3)';
+                    captureBtn.disabled = true;
+                }
+
+                resetBtn.disabled = count === 0;
+                saveBtn.disabled = count === 0 || !consentChk.checked;
+            };
+
+            consentChk.addEventListener('change', updateControls);
+
+            resetBtn.addEventListener('click', () => {
+                capturedDescriptors = [];
+                ovalEl?.classList.remove('detected');
+                if (canvasEl) {
+                    const ctx = canvasEl.getContext('2d');
+                    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                }
+                setStatus('Muestras reiniciadas. Listo para capturar (1/3).');
+                updateControls();
+            });
+
+            captureBtn.addEventListener('click', async () => {
+                if (!isCameraReady || isCapturing || capturedDescriptors.length >= 3) return;
+                isCapturing = true;
+                updateControls();
+                setStatus('Analizando rostro, mantén la posición...');
+
+                try {
+                    const sample = await FaceService.captureEnrollmentSample(videoEl, faceSettings.detectorModel);
+                    if (!isModalActive) return;
+
+                    if (!sample.ok) {
+                        ovalEl?.classList.remove('detected');
+                        setStatus(sample.reason, 'warning');
+                        FaceService.playFeedbackTone('warning');
+                    } else {
+                        capturedDescriptors.push(sample.descriptor);
+                        ovalEl?.classList.add('detected');
+                        FaceService.playFeedbackTone('success');
+
+                        // Dibujar marco de confirmación breve sobre canvas
+                        if (canvasEl && videoEl.videoWidth > 0) {
+                            canvasEl.width = videoEl.videoWidth;
+                            canvasEl.height = videoEl.videoHeight;
+                            const ctx = canvasEl.getContext('2d');
+                            ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                            ctx.strokeStyle = '#4CAF50';
+                            ctx.lineWidth = 3;
+                            const { x, y, width, height } = sample.box;
+                            ctx.strokeRect(x, y, width, height);
+                            setTimeout(() => {
+                                if (canvasEl) ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+                            }, 900);
+                        }
+
+                        if (capturedDescriptors.length < 3) {
+                            setStatus(`Muestra ${capturedDescriptors.length}/3 capturada ✓`, 'success');
+                        } else {
+                            setStatus('¡3/3 muestras listas! Guarda el registro.', 'success');
+                        }
+                    }
+                } catch (err) {
+                    setStatus(err.message || 'Error al analizar la imagen del rostro.', 'danger');
+                } finally {
+                    isCapturing = false;
+                    updateControls();
+                }
+            });
+
+            saveBtn.addEventListener('click', async () => {
+                if (capturedDescriptors.length === 0) {
+                    Toast.warning('Captura al menos una muestra facial antes de guardar.');
+                    return;
+                }
+                if (!consentChk.checked) {
+                    Toast.warning('Debes confirmar el consentimiento del colaborador.');
+                    return;
+                }
+
+                try {
+                    saveBtn.disabled = true;
+                    const res = await API.put(`/employees/${emp.id}/face-descriptor`, {
+                        descriptors: capturedDescriptors,
+                        consent: true
+                    });
+                    Toast.success(res.message || 'Registro facial guardado exitosamente.');
+                    Modal.close();
+                    if (this.infinityTable) {
+                        this.infinityTable.resetAndLoad();
+                    }
+                } catch (err) {
+                    Toast.danger(err.message || 'Error al guardar el registro facial.');
+                    updateControls();
+                }
+            });
+
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async () => {
+                    if (!confirm(`¿Deseas eliminar los datos biométricos faciales de ${emp.first_name} ${emp.last_name}?`)) return;
+                    try {
+                        deleteBtn.disabled = true;
+                        const res = await API.delete(`/employees/${emp.id}/face-descriptor`);
+                        Toast.success(res.message || 'Datos biométricos eliminados.');
+                        Modal.close();
+                        if (this.infinityTable) {
+                            this.infinityTable.resetAndLoad();
+                        }
+                    } catch (err) {
+                        Toast.danger(err.message || 'No se pudieron eliminar los datos biométricos.');
+                        deleteBtn.disabled = false;
+                    }
+                });
+            }
+
+            // Cargar modelos locales e iniciar cámara
+            try {
+                setStatus('Cargando modelos biométricos locales...');
+                await FaceService.loadModels(faceSettings.detectorModel);
+                if (!isModalActive) return;
+
+                setStatus('Iniciando cámara web...');
+                await FaceService.startCamera(videoEl);
+                if (!isModalActive) {
+                    FaceService.stopCamera();
+                    return;
+                }
+
+                isCameraReady = true;
+                setStatus('Cámara lista. Coloca el rostro dentro del óvalo y captura (1/3).', 'success');
+                updateControls();
+            } catch (initErr) {
+                setStatus(initErr.message || 'No se pudo inicializar el reconocimiento facial.', 'danger');
+                Toast.danger(initErr.message || 'No se pudo inicializar la cámara.');
+            }
+        } catch (err) {
+            Toast.danger(err.message || 'Error al abrir el módulo de enrolamiento facial.');
         }
     }
 };

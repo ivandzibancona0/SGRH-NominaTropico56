@@ -271,10 +271,24 @@ function timeToSeconds(timeVal) {
     return h * 3600 + m * 60 + s;
 }
 
-// POST /api/attendance/punch - Real-time punch clock check-in / check-out
+// Helper to parse MySQL local date-time string 'YYYY-MM-DD HH:MM:SS' safely without UTC offset issues
+function parseLocalDateTime(dtStr) {
+    if (!dtStr) return null;
+    const normalized = String(dtStr).replace('T', ' ').trim();
+    const [datePart, timePart = '00:00:00'] = normalized.split(' ');
+    const [y, m, d] = datePart.split('-').map(Number);
+    const [hh, mm, ss] = timePart.split(':').map(Number);
+    if (!y || !m || !d) return null;
+    return new Date(y, m - 1, d, hh || 0, mm || 0, ss || 0);
+}
+
+// POST /api/attendance/punch - Real-time punch clock check-in / check-out / auto (facial)
 router.post('/punch', verifyToken, async (req, res) => {
     try {
-        const { employee_id, type } = req.body; // type: 'check_in' | 'check_out' | 'status'
+        const { employee_id, type, method } = req.body; // type: 'check_in' | 'check_out' | 'status' | 'auto'
+        const punchMethod = method === 'facial' ? 'facial' : 'manual';
+        let effectiveType = type;
+
         if (!employee_id) {
             return res.status(400).json({ success: false, message: 'ID de colaborador es obligatorio.' });
         }
@@ -289,7 +303,7 @@ router.post('/punch', verifyToken, async (req, res) => {
         const displayTime = `${hours}:${minutes}`;
 
         const empRes = await query(`
-            SELECT e.id, e.first_name, e.last_name, e.code, e.shift,
+            SELECT e.id, e.first_name, e.last_name, e.code, e.shift, e.status as emp_status,
                    e.entry_time, e.exit_time, e.rest_day,
                    d.name as department_name, p.name as position_name
             FROM employees e
@@ -302,6 +316,13 @@ router.post('/punch', verifyToken, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Colaborador no encontrado.' });
         }
         const emp = empRes[0];
+
+        if (effectiveType === 'auto' && emp.emp_status !== 'active') {
+            return res.status(403).json({
+                success: false,
+                message: `El colaborador ${emp.first_name} ${emp.last_name} no se encuentra activo en plantilla.`
+            });
+        }
 
         const entrySec = timeToSeconds(emp.entry_time || '09:00:00');
         const exitSec = timeToSeconds(emp.exit_time || '17:00:00');
@@ -324,12 +345,68 @@ router.post('/punch', verifyToken, async (req, res) => {
                 [employee_id, yesterdayStr]
             );
 
-            // Si hay jornada abierta de ayer y estamos haciendo check_out o consulta de estatus sin entrada hoy
+            // Si hay jornada abierta de ayer y estamos haciendo check_out, auto o consulta de estatus sin entrada hoy
             if (existingYesterday.length > 0) {
-                if (type === 'check_out' || (type === 'status' && (!record || !record.check_in))) {
+                if (effectiveType === 'check_out' || ((effectiveType === 'status' || effectiveType === 'auto') && (!record || !record.check_in))) {
                     record = existingYesterday[0];
                     isClosingYesterday = true;
                 }
+            }
+        }
+
+        // Modo automático (Reconocimiento Facial): determinar ENTRADA / SALIDA y aplicar regla de cooldown
+        if (effectiveType === 'auto') {
+            let cooldownMinutes = 5;
+            try {
+                const cdRes = await query("SELECT value_text FROM system_settings WHERE key_name = 'face_cooldown_minutes' LIMIT 1");
+                if (cdRes.length > 0) {
+                    const parsedCd = parseFloat(cdRes[0].value_text);
+                    if (Number.isFinite(parsedCd) && parsedCd >= 0) {
+                        cooldownMinutes = parsedCd;
+                    }
+                }
+            } catch (cdErr) {
+                // fallback to default 5 minutes
+            }
+            const cooldownSeconds = Math.round(cooldownMinutes * 60);
+
+            if (!record || !record.check_in) {
+                effectiveType = 'check_in';
+            } else if (record.check_in && !record.check_out) {
+                // Evaluar cooldown desde la última marca para evitar checadas dobles accidentales
+                const lastPunchDt = record.last_punch_at
+                    ? parseLocalDateTime(record.last_punch_at)
+                    : parseLocalDateTime(`${record.date} ${record.check_in}`);
+
+                if (lastPunchDt && cooldownSeconds > 0) {
+                    const elapsedSec = Math.floor((now.getTime() - lastPunchDt.getTime()) / 1000);
+                    if (elapsedSec >= 0 && elapsedSec < cooldownSeconds) {
+                        const remainingSec = cooldownSeconds - elapsedSec;
+                        const remMin = Math.floor(remainingSec / 60);
+                        const remSec = remainingSec % 60;
+                        const waitLabel = remMin > 0
+                            ? `${remMin} min ${remSec > 0 ? `${remSec} seg` : ''}`.trim()
+                            : `${remSec} seg`;
+                        return res.status(429).json({
+                            success: false,
+                            code: 'COOLDOWN',
+                            remaining_seconds: remainingSec,
+                            employee: emp,
+                            message: `Entrada ya registrada para ${emp.first_name} ${emp.last_name} (${record.check_in.substring(0, 5)} hrs). Espera ${waitLabel} antes de registrar salida.`
+                        });
+                    }
+                }
+                effectiveType = 'check_out';
+            } else {
+                // Ya registró entrada y salida el día de hoy
+                return res.json({
+                    success: true,
+                    type: 'already_completed',
+                    employee: emp,
+                    today_record: record,
+                    time: displayTime,
+                    message: `${emp.first_name} ${emp.last_name} ya completó su jornada hoy (Entrada: ${record.check_in.substring(0, 5)} · Salida: ${record.check_out.substring(0, 5)} hrs).`
+                });
             }
         }
 
@@ -337,7 +414,7 @@ router.post('/punch', verifyToken, async (req, res) => {
         const targetDateStr = record ? record.date : dateStr;
 
         // Bloquear checada si la fecha pertenece a un periodo de nómina cerrado
-        if (type === 'check_in' || type === 'check_out') {
+        if (effectiveType === 'check_in' || effectiveType === 'check_out') {
             const closedPayroll = await getClosedPayrollForDate(targetDateStr);
             if (closedPayroll) {
                 return res.status(403).json({
@@ -349,15 +426,21 @@ router.post('/punch', verifyToken, async (req, res) => {
 
         const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
 
-        if (type === 'check_in') {
+        if (effectiveType === 'check_in') {
             // Si la hora de entrada es mayor a la hora del expediente -> Retardo
             const isLate = nowSec > entrySec;
             const status = isLate ? 'late' : 'present';
 
             if (record && !isClosingYesterday) {
-                await query('UPDATE attendance SET check_in = ?, status = ? WHERE id = ?', [timeStr, status, record.id]);
+                await query(
+                    'UPDATE attendance SET check_in = ?, status = ?, last_punch_at = NOW(), punch_method = ? WHERE id = ?',
+                    [timeStr, status, punchMethod, record.id]
+                );
             } else {
-                await query('INSERT INTO attendance (employee_id, date, check_in, status) VALUES (?, ?, ?, ?)', [employee_id, dateStr, timeStr, status]);
+                await query(
+                    'INSERT INTO attendance (employee_id, date, check_in, status, last_punch_at, punch_method) VALUES (?, ?, ?, ?, NOW(), ?)',
+                    [employee_id, dateStr, timeStr, status, punchMethod]
+                );
             }
 
             const scheduleDisplay = emp.entry_time ? emp.entry_time.substring(0, 5) : '09:00';
@@ -368,12 +451,14 @@ router.post('/punch', verifyToken, async (req, res) => {
             return res.json({
                 success: true,
                 type: 'check_in',
+                punch_method: punchMethod,
+                employee: emp,
                 time: displayTime,
                 status,
                 is_late: isLate,
                 message: msg
             });
-        } else if (type === 'check_out') {
+        } else if (effectiveType === 'check_out') {
             // Construir la fecha y hora exacta programada para la salida
             const [tYear, tMonth, tDay] = targetDateStr.split('-').map(Number);
             const [exH, exM, exS] = (emp.exit_time || '17:00:00').split(':').map(Number);
@@ -420,14 +505,16 @@ router.post('/punch', verifyToken, async (req, res) => {
                         check_out = ?, 
                         status = ?, 
                         overtime_hours = ?, 
-                        overtime_status = ? 
+                        overtime_status = ?,
+                        last_punch_at = NOW(),
+                        punch_method = ?
                     WHERE id = ?
-                `, [timeStr, status, ot, otStatus, record.id]);
+                `, [timeStr, status, ot, otStatus, punchMethod, record.id]);
             } else {
                 await query(`
-                    INSERT INTO attendance (employee_id, date, check_out, status, overtime_hours, overtime_status)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                `, [employee_id, dateStr, timeStr, status, ot, otStatus]);
+                    INSERT INTO attendance (employee_id, date, check_out, status, overtime_hours, overtime_status, last_punch_at, punch_method)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
+                `, [employee_id, dateStr, timeStr, status, ot, otStatus, punchMethod]);
             }
 
             const scheduleExitDisplay = emp.exit_time ? emp.exit_time.substring(0, 5) : '17:00';
@@ -443,6 +530,8 @@ router.post('/punch', verifyToken, async (req, res) => {
             return res.json({
                 success: true,
                 type: 'check_out',
+                punch_method: punchMethod,
+                employee: emp,
                 time: displayTime,
                 status,
                 is_early: isEarly,

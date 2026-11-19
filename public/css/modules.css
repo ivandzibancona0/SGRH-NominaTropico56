@@ -515,3 +515,182 @@
   }
 }
 
+/* -------------------------------------------------------------
+   RECONOCIMIENTO FACIAL (ENROLAMIENTO Y RELOJ CHECADOR DUAL)
+   ------------------------------------------------------------- */
+.punch-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  background: var(--color-bg);
+  padding: 0.35rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.punch-mode-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.punch-mode-tab:hover {
+  color: var(--color-dark);
+}
+
+.punch-mode-tab.active {
+  background: var(--color-card);
+  color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.face-camera-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 360px;
+  background: #14110F;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.face-camera-stage video,
+.face-camera-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.face-camera-stage canvas {
+  pointer-events: none;
+  z-index: 2;
+}
+
+.face-guide-oval {
+  position: relative;
+  z-index: 3;
+  width: 44%;
+  height: 70%;
+  border: 2.5px dashed rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.28);
+  transition: border-color 0.2s ease;
+}
+
+.face-guide-oval.detected {
+  border-color: #4CAF50;
+  border-style: solid;
+}
+
+.face-status-pill {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  background: rgba(20, 17, 15, 0.84);
+  color: #FFFFFF;
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.face-status-pill.success {
+  background: rgba(46, 125, 50, 0.92);
+}
+
+.face-status-pill.warning {
+  background: rgba(180, 83, 9, 0.92);
+}
+
+.face-status-pill.danger {
+  background: rgba(198, 40, 40, 0.92);
+}
+
+.face-overlay-card {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  background: rgba(20, 17, 15, 0.88);
+  backdrop-filter: blur(5px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1.5rem;
+  color: #FFFFFF;
+  gap: 0.5rem;
+}
+
+.face-enroll-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.face-enroll-step {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.6rem 0.5rem;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  transition: all 0.2s ease;
+}
+
+.face-enroll-step.active {
+  border-color: var(--color-primary);
+  background: rgba(217, 91, 40, 0.08);
+  color: var(--color-dark);
+  font-weight: 700;
+}
+
+.face-enroll-step.done {
+  border-color: var(--color-success);
+  background: rgba(46, 125, 50, 0.1);
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.badge-face-enrolled {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.68rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(46, 125, 50, 0.12);
+  color: #2E7D32;
+  border: 1px solid rgba(46, 125, 50, 0.25);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+

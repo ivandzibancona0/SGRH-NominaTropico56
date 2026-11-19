@@ -47,6 +47,8 @@ router.get('/', verifyToken, async (req, res) => {
                 e.email, e.phone, e.address, e.birth_date, e.hire_date,
                 e.department_id, e.position_id, e.contract_type, e.daily_salary,
                 e.shift, e.entry_time, e.exit_time, e.rest_day, e.status, e.avatar, e.created_at,
+                CASE WHEN e.face_descriptor IS NOT NULL AND e.face_descriptor != '' THEN 1 ELSE 0 END as has_face_enrolled,
+                e.face_enrolled_at,
                 d.name as department_name,
                 p.name as position_name
             FROM employees e
@@ -115,6 +117,144 @@ router.get('/', verifyToken, async (req, res) => {
     }
 });
 
+// GET /api/employees/face-descriptors - active employees with registered face vectors
+router.get('/face-descriptors', verifyToken, async (req, res) => {
+    try {
+        const rows = await query(`
+            SELECT 
+                e.id, e.code, e.first_name, e.last_name, e.face_descriptor, e.face_enrolled_at,
+                d.name as department_name, p.name as position_name
+            FROM employees e
+            LEFT JOIN departments d ON d.id = e.department_id
+            LEFT JOIN positions p ON p.id = e.position_id
+            WHERE e.status = 'active'
+              AND e.face_descriptor IS NOT NULL
+              AND e.face_descriptor != ''
+            ORDER BY e.first_name ASC, e.last_name ASC
+        `);
+
+        const data = [];
+        for (const row of rows) {
+            try {
+                const parsed = JSON.parse(row.face_descriptor);
+                let descriptors = [];
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    if (typeof parsed[0] === 'number' && parsed.length === 128) {
+                        descriptors = [parsed];
+                    } else if (Array.isArray(parsed[0])) {
+                        descriptors = parsed.filter(d => Array.isArray(d) && d.length === 128);
+                    }
+                }
+                if (descriptors.length > 0) {
+                    data.push({
+                        id: row.id,
+                        code: row.code,
+                        first_name: row.first_name,
+                        last_name: row.last_name,
+                        department_name: row.department_name,
+                        position_name: row.position_name,
+                        face_enrolled_at: row.face_enrolled_at,
+                        descriptors
+                    });
+                }
+            } catch (parseErr) {
+                console.warn(`Descriptor facial inválido para empleado ${row.id}:`, parseErr.message);
+            }
+        }
+
+        res.json({
+            success: true,
+            count: data.length,
+            data
+        });
+    } catch (error) {
+        console.error('Error al consultar descriptores faciales:', error);
+        res.status(500).json({ success: false, message: 'Error al obtener los descriptores biométricos.' });
+    }
+});
+
+// PUT /api/employees/:id/face-descriptor - enroll or update facial descriptors (admin & standard)
+router.put('/:id/face-descriptor', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { descriptors, consent } = req.body;
+
+        if (!consent) {
+            return res.status(400).json({
+                success: false,
+                message: 'Es obligatorio confirmar el consentimiento del colaborador para registrar datos biométricos.'
+            });
+        }
+
+        const empCheck = await query('SELECT id, first_name, last_name, status FROM employees WHERE id = ?', [id]);
+        if (empCheck.length === 0) {
+            return res.status(404).json({ success: false, message: 'Colaborador no encontrado.' });
+        }
+
+        // Normalize single 128-vector or array of 1..5 128-vectors
+        let normalized = [];
+        if (Array.isArray(descriptors) && descriptors.length > 0) {
+            if (typeof descriptors[0] === 'number') {
+                normalized = [descriptors];
+            } else if (Array.isArray(descriptors[0])) {
+                normalized = descriptors;
+            }
+        }
+
+        if (normalized.length === 0 || normalized.length > 5) {
+            return res.status(400).json({
+                success: false,
+                message: 'Debe proporcionar entre 1 y 5 capturas faciales válidas.'
+            });
+        }
+
+        for (const vec of normalized) {
+            if (!Array.isArray(vec) || vec.length !== 128 || !vec.every(n => typeof n === 'number' && Number.isFinite(n))) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Formato de descriptor facial inválido. Cada muestra debe contener exactamente 128 valores numéricos.'
+                });
+            }
+        }
+
+        const serialized = JSON.stringify(normalized);
+        await query(
+            'UPDATE employees SET face_descriptor = ?, face_enrolled_at = NOW() WHERE id = ?',
+            [serialized, id]
+        );
+
+        res.json({
+            success: true,
+            message: `Registro facial guardado exitosamente para ${empCheck[0].first_name} ${empCheck[0].last_name} (${normalized.length} muestras).`,
+            samples: normalized.length
+        });
+    } catch (error) {
+        console.error('Error al guardar descriptor facial:', error);
+        res.status(500).json({ success: false, message: 'Error al guardar el registro facial del colaborador.' });
+    }
+});
+
+// DELETE /api/employees/:id/face-descriptor - remove biometric data (ARCO / re-enrollment)
+router.delete('/:id/face-descriptor', verifyToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const empCheck = await query('SELECT id, first_name, last_name FROM employees WHERE id = ?', [id]);
+        if (empCheck.length === 0) {
+            return res.status(404).json({ success: false, message: 'Colaborador no encontrado.' });
+        }
+
+        await query('UPDATE employees SET face_descriptor = NULL, face_enrolled_at = NULL WHERE id = ?', [id]);
+
+        res.json({
+            success: true,
+            message: `Datos biométricos eliminados correctamente para ${empCheck[0].first_name} ${empCheck[0].last_name}.`
+        });
+    } catch (error) {
+        console.error('Error al eliminar descriptor facial:', error);
+        res.status(500).json({ success: false, message: 'Error al eliminar los datos biométricos.' });
+    }
+});
+
 // GET /api/employees/:id - single employee details
 router.get('/:id', verifyToken, async (req, res) => {
     try {
@@ -135,6 +275,8 @@ router.get('/:id', verifyToken, async (req, res) => {
         }
 
         const employee = result[0];
+        const hasFaceEnrolled = Boolean(employee.face_descriptor && employee.face_descriptor.length > 0);
+        delete employee.face_descriptor;
 
         // Fetch recent incidents and vacation requests for this employee
         const incidents = await query('SELECT * FROM incidents WHERE employee_id = ? ORDER BY date DESC LIMIT 5', [id]);
@@ -153,6 +295,7 @@ router.get('/:id', verifyToken, async (req, res) => {
             success: true,
             data: {
                 ...employee,
+                has_face_enrolled: hasFaceEnrolled,
                 incidents,
                 vacations,
                 attendance_summary: attendanceSummary[0] || {}
@@ -280,8 +423,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 router.delete('/:id', verifyToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        // Soft delete / mark inactive
-        await query("UPDATE employees SET status = 'inactive' WHERE id = ?", [id]);
+        // Soft delete / mark inactive and clear biometric data
+        await query("UPDATE employees SET status = 'inactive', face_descriptor = NULL, face_enrolled_at = NULL WHERE id = ?", [id]);
         res.json({ success: true, message: 'Empleado dado de baja exitosamente.' });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Error al dar de baja al empleado.' });

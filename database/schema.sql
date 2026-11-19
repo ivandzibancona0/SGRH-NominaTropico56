@@ -56,6 +56,8 @@ CREATE TABLE IF NOT EXISTS employees (
     rest_day VARCHAR(20) DEFAULT 'Domingo',
     status ENUM('active', 'inactive', 'vacation', 'leave') DEFAULT 'active',
     avatar VARCHAR(255),
+    face_descriptor LONGTEXT NULL,
+    face_enrolled_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (department_id) REFERENCES departments(id) ON DELETE RESTRICT,
@@ -73,6 +75,8 @@ CREATE TABLE IF NOT EXISTS attendance (
     overtime_status ENUM('pending', 'approved', 'compensated', 'rejected') DEFAULT 'approved',
     is_holiday_worked TINYINT(1) DEFAULT 0,
     notes TEXT,
+    last_punch_at DATETIME NULL,
+    punch_method ENUM('manual', 'facial') DEFAULT 'manual',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_emp_date (employee_id, date),
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE

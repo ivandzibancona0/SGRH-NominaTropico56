@@ -742,7 +742,7 @@
             <div class="cover-features-list">
                 <div class="cover-feature-item">
                     <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                    <span class="cover-feature-text">Reloj Checador con PIN y Teclado</span>
+                    <span class="cover-feature-text">Reloj Checador Facial y Manual</span>
                 </div>
                 <div class="cover-feature-item">
                     <svg class="cover-feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><path d="M6 14h2M12 14h6M6 17h4"/></svg>
@@ -766,7 +766,7 @@
             </div>
             <div class="cover-meta-item">
                 <div class="meta-label">Versión de Sistema</div>
-                <div class="meta-val">v1.2.0 Relacional MySQL</div>
+                <div class="meta-val">v1.3.0 Relacional MySQL</div>
             </div>
             <div class="cover-meta-item">
                 <div class="meta-label">Destinatarios</div>
@@ -804,7 +804,13 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><span class="badge badge-primary">v1.2.0</span></td>
+                    <td><span class="badge badge-primary">v1.3.0</span></td>
+                    <td>Noviembre, 2026</td>
+                    <td>Integración de reconocimiento facial 100% local/offline en el Reloj Checador (modo dual facial + manual), enrolamiento guiado de 3 muestras con consentimiento biométrico para roles Administrador y Estándar, prueba de vida antifraude por parpadeo, cooldown automático de 5 minutos y panel de parámetros biométricos en Configuración.</td>
+                    <td>Equipo de Desarrollo y Capital Humano</td>
+                </tr>
+                <tr>
+                    <td><span class="badge badge-accent">v1.2.0</span></td>
                     <td>1 de Octubre, 2026</td>
                     <td>Actualización integral: reloj checador digital con búsqueda y cierre seguro, automatización de retardos/salidas según horario de expediente, gestión y compensación de horas extras, bloqueo estricto de asistencias por nómina cerrada, cálculo de vacaciones con descanso excluido y recibos de nómina en media carta.</td>
                     <td>Equipo de Desarrollo y Capital Humano</td>
@@ -1094,9 +1100,14 @@
                     <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
                 </tr>
                 <tr>
-                    <td>Reloj Checador (PIN) y Pase de Lista</td>
+                    <td>Reloj Checador (Facial / Manual) y Pase de Lista</td>
                     <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
                     <td style="text-align: center;"><span class="badge badge-success">Acceso Total</span></td>
+                </tr>
+                <tr>
+                    <td>Enrolamiento Biométrico Facial de Colaboradores</td>
+                    <td style="text-align: center;"><span class="badge badge-success">Permitido</span></td>
+                    <td style="text-align: center;"><span class="badge badge-success">Permitido</span></td>
                 </tr>
                 <tr>
                     <td>Plantilla de Colaboradores (Directorio)</td>
@@ -1476,6 +1487,11 @@
                     <td><em>Activo</em>, <em>Inactivo</em>, <em>Vacaciones</em>, <em>Permiso</em></td>
                     <td>Filtra la inclusión en el pase de lista y nómina semanal/quincenal.</td>
                 </tr>
+                <tr>
+                    <td><strong>Enrolamiento Facial</strong></td>
+                    <td>3 muestras biométricas (vectores 128D) + consentimiento</td>
+                    <td>Habilita el marcaje automático sin contacto en el Reloj Checador. Disponible para roles <em>Administrador</em> y <em>Estándar</em>; los vectores se limpian automáticamente al dar de baja.</td>
+                </tr>
             </tbody>
         </table>
 
@@ -1530,20 +1546,20 @@
 
         <h3>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Reloj Checador Digital en Vivo y Modo Kiosco
+            Reloj Checador Digital Dual (Reconocimiento Facial + Manual)
         </h3>
         <p>
-            Accesible desde la barra superior. Funciona como terminal táctil de marcaje en tiempo real con segundero continuo y cierre protegido para prevenir salidas no autorizadas.
+            Accesible desde la barra superior. Opera en modo terminal/kiosco en tiempo real con <strong>reconocimiento facial 100% local (sin requerir Internet)</strong> y pestaña de <strong>registro manual</strong> como respaldo, manteniendo el cierre blindado por credenciales.
         </p>
 
         <div class="two-cols">
             <div>
-                <h4>Flujo de Marcaje y Seguridad:</h4>
+                <h4>Flujo de Marcaje Facial, Respaldo y Seguridad:</h4>
                 <ul class="styled-list">
-                    <li><strong>Buscador Reactivo:</strong> Localiza al colaborador al instante tecleando su nombre, apellido o código oficial (ej. <code>EMP-006</code>).</li>
-                    <li><strong>Horario Asignado:</strong> Al seleccionar al trabajador, el sistema muestra en pantalla su horario de expediente y determina si marca <em>Entrada</em> o <em>Salida</em>.</li>
-                    <li><strong>Cómputo Automático:</strong> Evalúa la puntualidad registrando <em>Retardo</em> o <em>Salida Anticipada</em> si difiere del horario oficial asignado.</li>
-                    <li><strong>Cierre Seguro Kiosco:</strong> El botón <em>Cerrar Reloj</em> exige validación con usuario y contraseña del supervisor para salir del modo de marcaje.</li>
+                    <li><strong>Reconocimiento Facial en Vivo:</strong> Identifica automáticamente al colaborador mediante la cámara web y modelos locales, solicitando <em>parpadeo natural</em> (prueba de vida antifraude) antes de confirmar.</li>
+                    <li><strong>Entrada / Salida y Cooldown:</strong> Determina automáticamente si corresponde <em>Entrada</em> o <em>Salida</em> (incluyendo turnos nocturnos) y aplica un bloqueo de enfriamiento de 5 minutos para impedir checadas dobles accidentales.</li>
+                    <li><strong>Respaldo Manual Reactivo:</strong> La pestaña manual conserva la búsqueda por nombre o código (ej. <code>EMP-006</code>) para colaboradores sin enrolar o contingencias de cámara.</li>
+                    <li><strong>Cierre Seguro Kiosco:</strong> El botón <em>Cerrar Reloj</em> exige usuario y contraseña activos y apaga automáticamente la cámara al salir.</li>
                 </ul>
             </div>
 
@@ -2109,9 +2125,17 @@
         <div class="callout callout-gold">
             <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <div>
-                <strong>Política de Respaldo Recomendada:</strong> Se aconseja generar y guardar una copia de respaldo en formato <strong>SQL</strong> cada semana después de cerrar nómina en un almacenamiento externo seguro.
+                <strong>Política de Respaldo Recomendada:</strong> Se aconseja generar y guardar una copia de respaldo en formato <strong>SQL</strong> cada semana después de cerrar nómina en un almacenamiento externo seguro. Los respaldos preservan íntegramente los vectores biométricos de los colaboradores enrolados.
             </div>
         </div>
+
+        <h3 style="margin-top: 12px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg>
+            Parámetros de Reconocimiento Facial (Solo Administrador)
+        </h3>
+        <p>
+            Desde la tarjeta <strong>Configuración de Reconocimiento Facial</strong> en el Módulo 10 se ajustan el estado activo del lector facial, el modelo detector (<em>SSD MobileNet</em> preciso o <em>TinyFace</em> ligero), el umbral de coincidencia (<code>0.40</code>–<code>0.60</code>), los minutos de <em>cooldown</em>, la prueba de vida por parpadeo y la disponibilidad de la pestaña de registro manual.
+        </p>
     </div>
 
     <!-- ======================================================== -->
@@ -2163,6 +2187,11 @@
                     <td>Para generar pago al 200%, edite la asistencia y seleccione <em>"Aprobadas para Pago en Nómina"</em>.</td>
                 </tr>
                 <tr>
+                    <td><strong>La cámara no enciende o no reconoce un rostro en el Reloj Checador</strong></td>
+                    <td>Permiso de cámara bloqueado, baja iluminación o colaborador sin enrolamiento previo.</td>
+                    <td>Conceda acceso a la cámara en <code>http://localhost:3000</code>, enrola 3 muestras desde <em>Personal</em> o utiliza temporalmente la pestaña <em>Registro Manual</em>.</td>
+                </tr>
+                <tr>
                     <td><strong>El navegador muestra una versión anterior en pantalla</strong></td>
                     <td>Memoria caché persistente del navegador web.</td>
                     <td>Presionar <code>Ctrl + F5</code> para recargar forzadamente el sistema y descargar los archivos actualizados.</td>
@@ -2179,7 +2208,8 @@
             <li><strong>LFT / Vacaciones Dignas:</strong> Legislación laboral mexicana que garantiza un mínimo de 12 días laborables con prima del 25%+.</li>
             <li><strong>Bloqueo de Nómina Cerrada:</strong> Candado de integridad que congela asistencias de un ciclo cerrado para impedir alteraciones.</li>
             <li><strong>Compensación de Horas Extra:</strong> Modalidad para saldar retardos o permisos con tiempo post-salida sin costo adicional en nómina.</li>
-            <li><strong>Kiosco de Reloj Checador:</strong> Interfaz de marcaje continuo en tiempo real con salida restringida por credenciales de supervisor.</li>
+            <li><strong>Kiosco de Reloj Checador:</strong> Interfaz dual de marcaje continuo (reconocimiento facial local y respaldo manual) con salida restringida por credenciales de supervisor.</li>
+            <li><strong>Descriptor Facial (128D):</strong> Vector matemático anónimo extraído del rostro para autenticación biométrica local sin almacenar fotografías.</li>
             <li><strong>Recibo Media Carta:</strong> Formato estandarizado de recibo de nómina (5.5" × 8.5") con firmas de conformidad y desglose de ley.</li>
             <li><strong>UTF-8 con BOM:</strong> Estándar de codificación de texto que garantiza la lectura perfecta de tildes y eñes en Microsoft Excel.</li>
         </ul>

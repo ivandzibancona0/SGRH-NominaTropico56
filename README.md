@@ -7,7 +7,7 @@
 ![Architecture](https://img.shields.io/badge/Architecture-SPA%20Mobile--First-0ea5e9?style=flat-square)
 ![License](https://img.shields.io/badge/License-ISC-green?style=flat-square)
 
-Sistema integral para la administración del capital humano, control biométrico/PIN de asistencias, gestión de incidencias y mermas operativas, cálculo avanzado de nóminas (masivas e individuales) y centro de inteligencia de reportes con exportación nativa a Microsoft Excel.
+Sistema integral para la administración del capital humano, control biométrico facial/manual de asistencias, gestión de incidencias y mermas operativas, cálculo avanzado de nóminas (masivas e individuales) y centro de inteligencia de reportes con exportación nativa a Microsoft Excel.
 
 Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**, restaurantes, bares y empresas de hospitalidad.
 
@@ -32,7 +32,8 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 
 - **Cero Frameworks Pesados en Frontend:** Aplicación de Página Única (**SPA**) ultrarrápida y liviana construida con **Vanilla JavaScript (ES6+)** y **Vanilla CSS**, con diseño adaptativo móvil/escritorio (Barra inferior móvil, Menú lateral desplegable y navegación fluida).
 - **Base de Datos Relacional Exclusiva en MySQL:** Conexión robusta por pool a servidor **MySQL / MariaDB** mediante `mysql2/promise` con auto-inicialización de esquema DDL relacional y datos base al primer arranque.
-- **Reloj Checador Digital Seguro con PIN y Búsqueda:** Modal interactivo con teclado numérico virtual, barra de búsqueda predictiva en tiempo real y **cierre blindado por credenciales de usuario** para evitar manipulaciones operativas.
+- **Reloj Checador Digital Dual (Reconocimiento Facial 100% Local + Respaldo Manual):** Modal kiosco en tiempo real con detección biométrica en el navegador (sin depender de Internet ni recargar Node.js), prueba de vida antifraude por parpadeo (*Eye Aspect Ratio*), determinación automática Entrada/Salida con cooldown de 5 minutos, pestaña de búsqueda manual como respaldo y **cierre blindado por credenciales de usuario**.
+- **Enrolamiento Facial Guiado con Privacidad:** Registro de 3 muestras biométricas (vectores de 128 puntos, sin almacenar fotografías) disponible para roles **Administrador** y **Estándar**, con confirmación de consentimiento y eliminación automática de biometría al dar de baja a un colaborador.
 - **Detección Automática de Retardos y Salidas Anticipadas:** Validación en tiempo real de checadas contra los horarios oficiales registrados en el expediente digital de cada colaborador (`entry_time`, `exit_time`).
 - **Pase de Lista Masivo con Horarios de Expediente:** Función "Marcar Todos Presentes" que autocompleta turnos oficiales individuales, cálculo de horas extras completas en estatus pendiente y compensación administrativa de retardos.
 - **🔒 Integridad de Datos por Nómina Cerrada:** Bloqueo estricto e irrevocable de asistencias en backend (`403 Forbidden`) y frontend para días involucrados en nóminas cerradas.
@@ -58,6 +59,7 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 | **Base de Datos** | `mysql2` | Motor relacional MySQL/MariaDB con pool de conexiones optimizado |
 | **Gestión de Archivos** | `multer` | Procesamiento en memoria para restauración de respaldos (hasta 20MB) |
 | **Frontend** | Vanilla JS (ES6+) / HTML5 / CSS3 | Interfaz SPA modular, sin empaquetadores ni dependencias externas |
+| **Biometría en Cliente** | `@vladmandic/face-api` (Local/Offline) | Detección facial (`SSD MobileNet` / `TinyFace`), landmarks de 68 puntos y vectores 128D locales en el navegador |
 | **Exportación de Datos** | Streams CSV con UTF-8 BOM | Compatibilidad perfecta con Microsoft Excel |
 
 ---
@@ -75,14 +77,15 @@ Diseñado y optimizado a la medida de la dinámica operativa de **Trópico 56**,
 ### 3. 👥 Colaboradores (Plantilla de Empleados)
 - Expediente digital completo: código único, nombres, RFC, CURP, NSS, fecha de ingreso, salario diario, turno, tipo de contrato.
 - **Horarios Oficiales y Días de Descanso:** Asignación individual de hora de entrada (`entry_time`), hora de salida (`exit_time`) y día de descanso semanal (`rest_day`).
+- **Enrolamiento Biométrico Facial:** Modal guiado de 3 capturas (*frente*, *giro izquierda*, *giro derecha*) accesible para usuarios **Administrador** y **Estándar**, con validación de calidad facial, consentimiento de privacidad (LFPDPPP) y opción para actualizar o eliminar vectores biométricos.
 - Filtrado dinámico por departamento y estatus (*Activo*, *Inactivo*, *Vacaciones*, *Permiso*).
-- Gestión de bajas ágil: registro directo mediante botón rápido (`🗑️`) o formulario de edición, guardando la fecha exacta de inactividad.
+- Gestión de bajas ágil: registro directo mediante botón rápido (`🗑️`) o formulario de edición, limpiando automáticamente los datos biométricos del colaborador al marcarlo inactivo.
 
 ### 4. 📅 Control de Asistencias y Reloj Checador
-- **Reloj Checador Digital Seguro:**
-  - Modal flotante con teclado numérico virtual o selección directa de colaborador.
-  - Barra de búsqueda predictiva en tiempo real por nombre, apellido o código de empleado.
-  - **Cierre Protegido por Credenciales:** Al intentar cerrar la ventana del checador se solicita autenticación obligatoria; si las credenciales no son válidas, la ventana permanece abierta para evitar manipulaciones en turnos.
+- **Reloj Checador Digital Dual (Facial + Manual):**
+  - **Modo Reconocimiento Facial (Principal):** Procesamiento 100% en el cliente mediante modelos locales (`public/models/`), detección multi-frame (3 frames estables), prueba de vida por parpadeo antifraude, asignación automática de **Entrada / Salida** (compatible con turnos nocturnos) y **regla de cooldown** configurable (5 minutos por defecto) para evitar checadas dobles accidentales.
+  - **Modo Registro Manual (Respaldo):** Barra de búsqueda predictiva en tiempo real por nombre, apellido o código de empleado para contingencias de cámara o personal sin enrolar.
+  - **Cierre Protegido por Credenciales:** Al intentar cerrar la ventana del checador se solicita autenticación obligatoria y se apaga la cámara automáticamente al confirmar el cierre.
 - **Automatización de Retardos y Salidas Anticipadas:**
   - Detección automática al checar entrada o salida comparando los tiempos registrados contra el horario oficial del expediente del colaborador.
   - Si la entrada supera la hora programada se clasifica automáticamente como **Retardo**.
@@ -135,8 +138,9 @@ Generación de reportes tabulares con filtros de fechas, atajos rápidos (`[Este
 - Cambio de contraseña de autoservicio desde el perfil.
 
 ### 10. ⚙️ Configuración, Respaldos y Mantenimiento
-- Parámetros operativos del restaurante (nombre, tolerancia de retardo, moneda).
-- **Exportación de Respaldos:** Generación de copias completas en formato **JSON** o **SQL** con sentencias transaccionales.
+- Parámetros operativos del restaurante (nombre, RFC, frecuencia de pago, prima vacacional, aguinaldo y moneda).
+- **Configuración de Reconocimiento Facial:** Panel exclusivo de Administrador para activar/desactivar el lector facial, elegir el modelo detector (`SSD MobileNet` preciso o `TinyFace` ligero), ajustar umbral de coincidencia (`0.35`–`0.65`), definir minutos de cooldown, exigir prueba de vida por parpadeo y habilitar o restringir la pestaña de respaldo manual.
+- **Exportación de Respaldos:** Generación de copias completas en formato **JSON** o **SQL** con sentencias transaccionales (preservando los descriptores faciales almacenados).
 - **Restauración de Respaldos:** Carga y restauración directa de archivos JSON o SQL desde el navegador.
 - **Reinicio de Fábrica:** Limpieza y regeneración segura de la base de datos con verificación mediante token (`BORRAR_TODO_TROPICO_56`).
 
@@ -177,22 +181,26 @@ Generación de reportes tabulares con filtros de fechas, atajos rápidos (`[Este
 │   │   ├── app.js               # Enrutador principal de la SPA y navegación de vistas
 │   │   ├── auth.js              # Gestor de sesión en localStorage y decodificación de roles
 │   │   ├── components/
+│   │   │   ├── faceService.js   # Servicio local de reconocimiento facial, cámara y prueba de vida
 │   │   │   ├── icons.js         # Diccionario de iconos SVG en línea
 │   │   │   ├── infinityScroll.js# Controlador de scroll infinito con IntersectionObserver
 │   │   │   ├── modal.js         # Componente de ventanas modales dinámicas
-│   │   │   ├── punchClock.js    # Componente modal de reloj checador con teclado numérico
+│   │   │   ├── punchClock.js    # Reloj checador dual (reconocimiento facial + respaldo manual)
 │   │   │   └── toast.js         # Notificaciones flotantes no bloqueantes
 │   │   └── modules/
 │   │       ├── attendance.js    # Vista de pase de lista y bitácora de asistencia
 │   │       ├── dashboard.js     # Vista de KPIs generales y accesos rápidos
 │   │       ├── departments.js   # Vista de gestión de puestos y departamentos
-│   │       ├── employees.js     # Vista de directorio de empleados y expedientes
+│   │       ├── employees.js     # Vista de directorio de empleados, expedientes y enrolamiento facial
 │   │       ├── incidents.js     # Vista de gestión de mermas e incidencias
 │   │       ├── payroll.js       # Vista interactiva de pre-nómina, nóminas y recibos
 │   │       ├── reports.js       # Vista de generación de reportes y descargas CSV
-│   │       ├── settings.js      # Vista de ajustes generales, respaldos y reseteo
+│   │       ├── settings.js      # Vista de ajustes generales, parámetros faciales, respaldos y reseteo
 │   │       ├── users.js         # Vista de control de usuarios y privilegios
 │   │       └── vacations.js     # Vista de solicitudes y saldos de vacaciones LFT
+│   ├── models/                  # Pesos preentrenados locales de face-api (operación 100% offline)
+│   ├── vendor/
+│   │   └── face-api.js          # Librería local @vladmandic/face-api (sin dependencia de CDN)
 │   └── index.html               # Contenedor raíz de la SPA
 ├── .env.example                 # Plantilla de variables de configuración
 ├── .gitignore                   # Exclusiones de control de versiones Git

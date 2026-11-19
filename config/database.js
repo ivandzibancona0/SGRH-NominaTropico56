@@ -130,6 +130,8 @@ async function createTables() {
             rest_day VARCHAR(20) DEFAULT 'Domingo',
             status ENUM('active', 'inactive', 'vacation', 'leave') DEFAULT 'active',
             avatar VARCHAR(255),
+            face_descriptor LONGTEXT NULL,
+            face_enrolled_at TIMESTAMP NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_emp_dept (department_id),
@@ -150,6 +152,8 @@ async function createTables() {
             overtime_status ENUM('pending', 'approved', 'compensated', 'rejected') DEFAULT 'approved',
             is_holiday_worked TINYINT(1) DEFAULT 0,
             notes TEXT,
+            last_punch_at DATETIME NULL,
+            punch_method ENUM('manual', 'facial') DEFAULT 'manual',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             UNIQUE KEY unique_emp_date (employee_id, date),
             INDEX idx_att_date (date),
@@ -267,6 +271,17 @@ async function createTables() {
 
         // Asegurar que el ENUM de status en attendance incluye 'early_departure'
         await query("ALTER TABLE attendance MODIFY COLUMN status ENUM('present', 'late', 'justified_absence', 'unjustified_absence', 'leave', 'vacation', 'early_departure') DEFAULT 'present'");
+
+        // Migración no destructiva para columnas de reconocimiento facial
+        const faceDescCol = await query("SHOW COLUMNS FROM employees LIKE 'face_descriptor'");
+        if (faceDescCol.length === 0) {
+            await query("ALTER TABLE employees ADD COLUMN face_descriptor LONGTEXT NULL, ADD COLUMN face_enrolled_at TIMESTAMP NULL");
+        }
+
+        const lastPunchCol = await query("SHOW COLUMNS FROM attendance LIKE 'last_punch_at'");
+        if (lastPunchCol.length === 0) {
+            await query("ALTER TABLE attendance ADD COLUMN last_punch_at DATETIME NULL, ADD COLUMN punch_method ENUM('manual', 'facial') DEFAULT 'manual'");
+        }
     } catch (migErr) {
         console.warn('Nota sobre migración de columnas:', migErr.message);
     }
@@ -281,6 +296,19 @@ async function seedInitialData() {
         await query("INSERT INTO system_settings (key_name, value_text) VALUES ('vacation_bonus_pct', '25.00')");
         await query("INSERT INTO system_settings (key_name, value_text) VALUES ('christmas_bonus_days', '15')");
         await query("INSERT INTO system_settings (key_name, value_text) VALUES ('currency', 'MXN')");
+    }
+
+    // Asegurar parámetros predeterminados de reconocimiento facial sin sobrescribir configuraciones existentes
+    const defaultFaceSettings = [
+        ['face_recognition_enabled', '1'],
+        ['face_match_threshold', '0.50'],
+        ['face_cooldown_minutes', '5'],
+        ['face_liveness_required', '1'],
+        ['face_detector_model', 'ssd'],
+        ['punch_manual_fallback', '1']
+    ];
+    for (const [key, val] of defaultFaceSettings) {
+        await query("INSERT IGNORE INTO system_settings (key_name, value_text) VALUES (?, ?)", [key, val]);
     }
 
     // 2. Check & Seed LFT Rules

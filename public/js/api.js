@@ -53,7 +53,10 @@ const API = {
 
             const data = await res.json();
             if (!res.ok) {
-                throw new Error(data.message || `Error en la petición (${res.status})`);
+                const err = new Error(data.message || `Error en la petición (${res.status})`);
+                err.status = res.status;
+                err.data = data;
+                throw err;
             }
             return data;
         } catch (error) {

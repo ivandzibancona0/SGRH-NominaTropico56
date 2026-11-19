@@ -141,6 +141,62 @@ const SettingsModule = {
                     </div>
                 </form>
             </div>
+
+            <!-- Facial Recognition Settings Card -->
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <h3><span style="width: 20px; height: 20px;">${Icons.faceId}</span> Configuración de Reconocimiento Facial</h3>
+                    <span class="badge badge-info">Procesamiento 100% Local</span>
+                </div>
+
+                <form id="face-settings-form">
+                    <div class="form-row form-row-4">
+                        <div class="form-group">
+                            <label>Reconocimiento Facial en Checador</label>
+                            <select id="set-face-enabled" class="form-control">
+                                <option value="1" selected>Activado</option>
+                                <option value="0">Desactivado (Solo Manual)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo Detector</label>
+                            <select id="set-face-detector" class="form-control">
+                                <option value="ssd" selected>Preciso (SSD MobileNet - Recomendado)</option>
+                                <option value="tiny">Ligero (TinyFace - PCs antiguas)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Umbral de Coincidencia (0.40 - 0.60)</label>
+                            <input type="number" step="0.02" min="0.35" max="0.65" id="set-face-threshold" class="form-control" value="0.50">
+                        </div>
+                        <div class="form-group">
+                            <label>Cooldown Entrada/Salida (min)</label>
+                            <input type="number" step="1" min="0" max="60" id="set-face-cooldown" class="form-control" value="5">
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-group">
+                            <label>Prueba de Vida Antifraude (Parpadeo / Movimiento)</label>
+                            <select id="set-face-liveness" class="form-control">
+                                <option value="1" selected>Activada (Parpadeo o ligero movimiento de cabeza)</option>
+                                <option value="0">Desactivada (Checada directa tras 3 frames)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Respaldo de Registro Manual en Reloj Checador</label>
+                            <select id="set-punch-manual" class="form-control">
+                                <option value="1" selected>Permitido (Modo Dual Facial + Manual)</option>
+                                <option value="0">Solo Reconocimiento Facial</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; margin-top: 0.75rem;">
+                        <button type="button" class="btn btn-primary" id="btn-save-face-settings">Guardar Configuración Facial</button>
+                    </div>
+                </form>
+            </div>
         `;
 
         this.setupHandlers();
@@ -205,6 +261,40 @@ const SettingsModule = {
                 Toast.danger(err.message || 'Error al guardar configuración.');
             }
         });
+
+        // Save facial recognition settings
+        const saveFaceBtn = document.getElementById('btn-save-face-settings');
+        if (saveFaceBtn) {
+            saveFaceBtn.addEventListener('click', async () => {
+                const thresholdNum = parseFloat(document.getElementById('set-face-threshold').value);
+                const cooldownNum = parseFloat(document.getElementById('set-face-cooldown').value);
+
+                if (!Number.isFinite(thresholdNum) || thresholdNum < 0.35 || thresholdNum > 0.65) {
+                    Toast.warning('El umbral de coincidencia debe estar entre 0.35 y 0.65.');
+                    return;
+                }
+                if (!Number.isFinite(cooldownNum) || cooldownNum < 0 || cooldownNum > 60) {
+                    Toast.warning('El tiempo de cooldown debe estar entre 0 y 60 minutos.');
+                    return;
+                }
+
+                const settings = {
+                    face_recognition_enabled: document.getElementById('set-face-enabled').value,
+                    face_detector_model: document.getElementById('set-face-detector').value,
+                    face_match_threshold: thresholdNum.toFixed(2),
+                    face_cooldown_minutes: String(Math.round(cooldownNum)),
+                    face_liveness_required: document.getElementById('set-face-liveness').value,
+                    punch_manual_fallback: document.getElementById('set-punch-manual').value
+                };
+
+                try {
+                    await API.put('/system/settings', { settings });
+                    Toast.success('Configuración de reconocimiento facial guardada correctamente.');
+                } catch (err) {
+                    Toast.danger(err.message || 'Error al guardar configuración biométrica.');
+                }
+            });
+        }
     },
 
     async loadStatusAndSettings() {
@@ -229,6 +319,14 @@ const SettingsModule = {
                 if (st.default_payment_period) document.getElementById('set-default-period').value = st.default_payment_period;
                 if (st.vacation_bonus_pct) document.getElementById('set-vac-pct').value = st.vacation_bonus_pct;
                 if (st.christmas_bonus_days) document.getElementById('set-xmas-days').value = st.christmas_bonus_days;
+
+                // Facial recognition settings
+                if (st.face_recognition_enabled !== undefined) document.getElementById('set-face-enabled').value = st.face_recognition_enabled;
+                if (st.face_detector_model) document.getElementById('set-face-detector').value = st.face_detector_model;
+                if (st.face_match_threshold) document.getElementById('set-face-threshold').value = st.face_match_threshold;
+                if (st.face_cooldown_minutes !== undefined) document.getElementById('set-face-cooldown').value = st.face_cooldown_minutes;
+                if (st.face_liveness_required !== undefined) document.getElementById('set-face-liveness').value = st.face_liveness_required;
+                if (st.punch_manual_fallback !== undefined) document.getElementById('set-punch-manual').value = st.punch_manual_fallback;
             }
         } catch (e) {
             console.error('Error al cargar status:', e);
